@@ -1,1 +1,2 @@
-# SE-Project
+AI Powered note-taking web app
+
