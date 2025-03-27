@@ -1,6 +1,6 @@
 from config import users_collection
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime,timezone
 from bson.objectid import ObjectId
 
 def create_user(username, email, password, name):
