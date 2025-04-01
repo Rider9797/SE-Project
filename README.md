@@ -18,6 +18,13 @@ etc (signup) you can gpt( give routers/authController as prompt)
 
 
 
+
+
+
+
+
+
+
 PROJECT SETUP:
 
 1. Accept the mongo invite that abbas e-mailed which will make you a member of the project
