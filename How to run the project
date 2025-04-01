@@ -15,3 +15,6 @@ HOW TO RUN THE PROJECT:
 HOW TO CHECK IF YOU CONNECTED TO THE DATABASE SUCCESSFULLY
 - When you run the project, in the backend waala terminal in which you ran app.py, you should see this: "Pinged your deployment. You successfully connected to MongoDB!" below your uri string.
 - If you see bad authentication you messed up while entering the string, if it still doesn't work mujhe batana I'll reset you credentials and it'll work
+
+
+
