@@ -1,6 +1,45 @@
 if you have your own db atlas, go to .env, and put in your own url and password in your own link
 
-to get redis server you will need redis server u need wsl for redis server got to cmd and run -wsl -sudo apt update && sudo apt install redis -y -(if you get this after the above line E: dpkg was interrupted, you must manually run 'sudo dpkg --configure -a' to correct the problem. do thiis sudo dpkg --configure -a) -then run sudo apt update && sudo apt install redis -y -sudo service redis-server start -redis-cli ping (should return PONG)
+Instructions for installing and starting a Redis server using WSL on Windows:
+
+1. **Open your Command Prompt (CMD) and enter WSL**  
+   Type the following command to open your WSL terminal:
+   ```sh
+   wsl
+   ```
+
+2. **Update Package Lists and Install Redis**  
+   Run the following commands in your WSL terminal:
+   ```sh
+   sudo apt update && sudo apt install redis-server -y
+   ```
+   - **Note:** If you see an error like  
+     `E: dpkg was interrupted, you must manually run 'sudo dpkg --configure -a' to correct the problem`,  
+     then run:
+     ```sh
+     sudo dpkg --configure -a
+     ```
+     After that, re-run:
+     ```sh
+     sudo apt update && sudo apt install redis-server -y
+     ```
+
+3. **Start the Redis Server**  
+   Once installation is complete, start the Redis server with:
+   ```sh
+   sudo service redis-server start
+   ```
+
+4. **Verify the Redis Server is Running**  
+   Check the connection by running:
+   ```sh
+   redis-cli ping
+   ```
+   - If everything is working, you should see:
+     ```
+     PONG
+     ```
+
 
 make sure redis is started on wsl
 
