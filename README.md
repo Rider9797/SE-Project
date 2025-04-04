@@ -15,9 +15,3 @@ once installed enter url in accordance with the functions in routers/authControl
 { "email": "test@example.com", "password": "testpass" } for login
 
 etc (signup) you can gpt( give routers/authController as prompt) 
-
-HOW TO CHECK IF THE BACKEND IS ACTUALLY WORKING
-- When you register as a new user in the app, because there are no webpages yet to redirect to upon successful login, you will have to check through the backend waala terminal or inspect the webpage
-- If you the terminal is printing white post requests(as in the text is not red) and the status code is 200, that means yes scene, warna lul
-- While inspecting, go to console, and udher you'll see the login responses and if you click object you can see the access token
-

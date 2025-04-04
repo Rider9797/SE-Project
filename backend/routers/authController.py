@@ -5,6 +5,7 @@ import os
 from datetime import timedelta
 from flask import Blueprint, request, jsonify, make_response, redirect
 from flask_jwt_extended import create_access_token
+from flask_login import login_user
 from models.users import create_user, verify_user
 from config import redis_client
 
@@ -46,8 +47,11 @@ def login():
 
     user_id = str(user["_id"])
 
+
+    # login_user(user, remember = True)
     # Generate a JWT token (for your internal use if needed)
     access_token = create_access_token(identity=user_id, expires_delta=timedelta(hours=2))
+    
     
     # Here, we directly use user_id (no need to decode the token)
     username = user["username"] 
@@ -71,6 +75,18 @@ def login():
         samesite="Lax"
     )
     
+
+    # response = make_response(redirect("/dummy"))
+    # response.set_cookie(
+    #     key=SESSION_COOKIE_NAME,
+    #     value=session_id,
+    #     max_age=SESSION_DURATION,
+    #     httponly=True,
+    #     secure=True,
+    #     samesite="Lax"
+    # )
+
+
     return response
 
 @auth_routes.route("/logout", methods=["POST"])
