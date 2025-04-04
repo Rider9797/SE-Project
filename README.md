@@ -15,3 +15,7 @@ once installed enter url in accordance with the functions in routers/authControl
 { "email": "test@example.com", "password": "testpass" } for login
 
 etc (signup) you can gpt( give routers/authController as prompt) 
+
+
+
+

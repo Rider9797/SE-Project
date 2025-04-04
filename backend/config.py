@@ -13,11 +13,14 @@ REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))  # Default to 6379 if not set
 FLASK_ENV = os.getenv("FLASK_ENV", "development")
 
+
+
+
+
 uri = MONGO_URI
 print("MONGO_URI:", MONGO_URI)
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
-
 # Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')
