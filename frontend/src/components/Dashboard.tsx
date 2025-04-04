@@ -12,7 +12,7 @@ interface Note {
 }
 
 // Create configured axios instance
-const authedApi = axios.create({
+export const authedApi = axios.create({
     baseURL: 'http://127.0.0.1:5000/api',
     withCredentials: true,
     headers: {

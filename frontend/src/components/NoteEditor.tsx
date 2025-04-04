@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, message } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import { authedApi } from './Dashboard';
 const { TextArea } = Input;
 
 const NoteEditor: React.FC = () => {
-    
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -17,7 +17,8 @@ const NoteEditor: React.FC = () => {
   useEffect(() => {
     if (id) {
       // If editing existing note, fetch its data
-      axios.get(`http://127.0.0.1:5000/notes/${id}`, { withCredentials: true })
+      // axios.get(`http://127.0.0.1:5000/notes/${id}`, { withCredentials: true })
+      authedApi.get(`/notes/${id}`)
         .then(res => {
           setTitle(res.data.title);
           setContent(res.data.content);
@@ -33,17 +34,19 @@ const NoteEditor: React.FC = () => {
     try {
       if (id) {
         // Update existing note
-        await axios.put(`http://127.0.0.1:5000/notes/${id}`, 
-          { title, content },
-          { withCredentials: true }
-        );
+        // await axios.put(`http://127.0.0.1:5000/notes/${id}`, 
+        //   { title, content },
+        //   { withCredentials: true }
+        // );
+        await authedApi.put(`/notes/${id}`, { title, content });
         message.success('Note updated!');
       } else {
         // Create new note (shouldn't happen here, but just in case)
-        await axios.post('http://127.0.0.1:5000/notes', 
-          { title, content },
-          { withCredentials: true }
-        );
+        // await axios.post('http://127.0.0.1:5000/notes', 
+        //   { title, content },
+        //   { withCredentials: true }
+        // );
+        await authedApi.post('/notes', { title, content });
         message.success('Note created!');
       }
       navigate('/dashboard');

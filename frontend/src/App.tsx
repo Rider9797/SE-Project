@@ -13,6 +13,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dummy" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/notes/:id/edit" element={<NoteEditor />} />
       </Routes>
     </Router>

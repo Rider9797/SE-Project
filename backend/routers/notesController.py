@@ -40,8 +40,8 @@ def create_note_route():
         content=data.get('content', '')  # Fixed syntax: data.get() not data.get[]
     )
     response = jsonify({"note_id": str(note_id)}), 201
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+    # response.headers.add('Access-Control-Allow-Credentials', 'true')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
     return response
 
 @notes_routes.route("/notes/<note_id>", methods=["PUT"])
