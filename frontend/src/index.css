@@ -5,13 +5,14 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #181717;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 
 a {
   font-weight: 500;
@@ -24,10 +25,33 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  display: grid;
   place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  min-width: 300px;
+  min-height: 25vh;
+  padding-top: 200px;  /* Push content down */
+  transform: scale(1.35); /* Scale everything by 1.2 times */
+  transform-origin: center;
+}
+
+.logo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px; /* Space between logo and word */
+  margin-bottom: 40px; /* Add spacing below */
+  margin-top: 0; /* Move only the logo up */
+}
+
+
+.login-logo {
+  width: 100px; /* Adjust size */
+  height: auto;
+}
+
+.login-logo-word {
+  width: 150px; /* Adjust size */
+  height: auto;
 }
 
 h1 {
@@ -36,23 +60,142 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: 10 px;
+  border: 2px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #ebe0e0;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #111bdf;
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+
+/* Default checkbox border */
+.ant-checkbox .ant-checkbox-inner {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;  /* Slightly rounded */
+  border: 2px solid #3f3f44;  /* Change border color */
+}
+
+/* Checkbox when checked */
+/* Change border and background color when hovering over the checkbox */
+.ant-checkbox-wrapper:hover .ant-checkbox-inner {
+  border-color: #d0d0d4 !important;  /* Force orange border */
+  background-color: #2e2c2a !important; /* Light orange background */
+}
+
+/* Ensure the background color only changes when NOT checked */
+.ant-checkbox:not(.ant-checkbox-checked):hover .ant-checkbox-inner {
+  background-color: #53514e !important; 
+}
+
+
+/* Change tick mark color */
+.ant-checkbox-checked .ant-checkbox-inner::after {
+  border-color: #f2f5f2 !important; /* Makes the checkmark white */
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #393734 !important;  /* Orange background */
+  border-color: #32302f !important;  /* Orange border */
+}
+/* Change the color of the checkbox label text */
+.ant-checkbox-wrapper {
+  color: #74727c; /* Change to your desired color */
+  font-size: 11px; /* Adjust font size if needed */
+  font-weight: none; /* Make it bold if required */
+}
+
+/* Change color on hover */
+.ant-checkbox-wrapper:hover {
+  color: #8b8894; /* Lighter shade on hover */
+}
+
+.forgot-password-link {
+  font-size: 11px;
+  font-weight: normal; /* Or lighter, if you want it thinner */
+  color: #74727c; /* Optional: Change color to a lighter shade */
+  text-decoration: none; /* Optional: Underline for emphasis */
+}
+
+.forgot-password-link:hover {
+  color: #8b8894; /* Change color on hover */
+  text-decoration: none; /* Add underline on hover */
+}
+
+/* Center the button in the parent container (Form.Item) */
+/* Center the button in the parent container (Form.Item) */
+.ant-form-item {
+  display: flex !important;
+  justify-content: center !important; /* Center the button horizontally */
+  align-items: center !important;     /* Center the button vertically if needed */
+  width: 100%; /* Ensure the form item takes up full width */
+}
+
+/* Styling for the button itself */
+.ant-btn-primary {
+  background-color: #514f4d !important;  /* Change background color */
+  border-color: #575350 !important;  /* Change border color */
+  color: white !important;  /* Text color */
+  font-weight: bold;
+  font-size: 14px;
+  padding: 0px 100px;
+  border-radius: 8px; /* Rounded corners */
+  transition: all 0.3s ease-in-out;
+  width: 100% !important;  /* Make the button take up the full width of its container */
+  max-width: 600px !important; /* Optional: Limit the button width */
+  margin: 0 auto !important; /* Centers the button horizontally */
+}
+
+/* Hover effect */
+.ant-btn-primary:hover {
+  background-color: #b6b1ad !important;  /* Darker orange on hover */
+  border-color: #a4a19f !important;
+}
+
+/* Focus effect */
+.ant-btn-primary:focus,
+.ant-btn-primary:active {
+  background-color: #a4a19f !important;
+  border-color: #a4a19f !important;
+}
+
+.ant-btn-default {
+  background-color: #514f4d !important;  /* Change background color */
+  border-color: #575350 !important;  /* Change border color */
+  color: white !important;  /* Text color */
+  font-weight: bold;
+  font-size: 14px;
+  padding: 0px 60px;
+  border-radius: 8px; /* Rounded corners */
+  transition: all 0.3s ease-in-out;
+  max-width: 600px !important; /* Optional: Limit the button width */
+  width: 100% !important;  /* Make the button take up the full width of its container */
+  margin: 0 auto !important; /* Centers the button horizontally */
+}
+
+.ant-btn-default:hover {
+  background-color: #b6b1ad !important;  /* Darker orange on hover */
+  border-color: #a4a19f !important;
+}
+
+/* Focus effect */
+.ant-btn-default:focus,
+.ant-btn-default:active {
+  background-color: #a4a19f !important;
+  border-color: #a4a19f !important;
+}
+
 
 @media (prefers-color-scheme: light) {
   :root {

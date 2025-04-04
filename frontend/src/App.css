@@ -40,3 +40,44 @@
 .read-the-docs {
   color: #888;
 }
+/*
+login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo-wrapper {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-logo {
+  height: 100px;
+  margin-bottom: 1rem;
+}
+
+.login-logo-word {
+  height: 40px;
+  margin-bottom: 2rem;
+}
+
+.login-btn {
+  background-color: #1890ff;
+  font-weight: 500;
+}
+
+.signup-btn {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.existing-user-text span {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0 10px;
+  position: relative;
+  top: -10px;
+}*/
