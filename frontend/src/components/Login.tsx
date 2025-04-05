@@ -1,64 +1,75 @@
-import React from "react";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Flex } from "antd";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import LogoImage from "./assets/Frame.svg";
-import LogoWord from "./assets/Note Genius.svg";
+import React from 'react';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, Flex, message } from 'antd';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { setAuthToken } from '../utils/authorisation'; // Import auth utility
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: { email: string; password: string }) => {
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/auth/login",
-        values
-      );
-      console.log("Login Successful:", response.data);
-      alert("Login successful!");
-    } catch (error) {
-      console.error("Login Failed:", error);
-      alert("Login failed. Check credentials.");
+      const response = await axios.post('http://127.0.0.1:5000/auth/login', values, {
+        withCredentials: true
+      });
+      
+      // Store the received token
+      setAuthToken(response.data.access_token);
+      
+      // Success feedback
+      message.success('Login successful!');
+      
+      // Redirect to dashboard
+      navigate('/dummy');
+    } 
+    
+    catch (error) 
+    {
+      console.error('Login Failed:', error);
+      message.error('Login failed. Please check your credentials.');
     }
+
+
+
+    
   };
 
   return (
-    <div className="login-container">
-      <div className="logo-wrapper">
-        <img src={LogoImage} alt="Logo" className="login-logo" />
-        <img src={LogoWord} alt="Logo-Word" className="login-logo-word" />
-      </div>
-      <Form
-        name="login"
-        initialValues={{ remember: true }}
-        style={{ maxWidth: 360 }}
-        onFinish={onFinish}
+    <Form
+      name="login"
+      initialValues={{ remember: true }}
+      style={{ maxWidth: 360 }}
+      onFinish={onFinish}
+    >
+      <Form.Item
+        name="email"
+        rules={[
+          { required: true, message: 'Please input your Email!' },
+          { type: 'email', message: 'Please enter a valid email!' }
+        ]}
       >
-        <Form.Item
-          name="email"
-          rules={[{ required: true, message: "Please input your Email!" }]}
-          style={{ marginBottom: 10 }}
-        >
-          <Input prefix={<UserOutlined />} placeholder="Email" />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          rules={[{ required: true, message: "Please input your Password!" }]}
-          style={{ marginBottom: 20 }}
-        >
-          <Input prefix={<LockOutlined />} type="password" placeholder="Password" />
-        </Form.Item>
-        <Form.Item>
-          <Flex justify="space-between" align="center">
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
-            <a href="#" className="forgot-password-link">
-              Forgot password
-            </a>
-          </Flex>
-        </Form.Item>
+        <Input prefix={<UserOutlined />} placeholder="Email" />
+      </Form.Item>
+      
+      <Form.Item
+        name="password"
+        rules={[
+          { required: true, message: 'Please input your Password!' },
+          { min: 6, message: 'Password must be at least 6 characters!' }
+        ]}
+      >
+        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+      </Form.Item>
+      
+      <Form.Item>
+        <Flex justify="space-between" align="center">
+          <Form.Item name="remember" valuePropName="checked" noStyle>
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+          <a href="">Forgot password</a>
+        </Flex>
+      </Form.Item>
 
         <Form.Item style={{ marginBottom: 10 }}>
           <Button block type="primary" htmlType="submit" className="login-btn">

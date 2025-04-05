@@ -9,7 +9,7 @@ def create_env_file(env_path=".env"):
     secret_key = generate_secret_key()
     
     # Define default values for other environment variables
-    mongo_uri = "mongodb://localhost:27017/your_database_name"
+    mongo_uri = "mongodb+srv://Tayyab:tayyab1@cluster0.uk6rwuh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     redis_host = "localhost"
     redis_port = "6379"
     flask_env = "development"
