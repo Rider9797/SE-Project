@@ -17,6 +17,7 @@ const Login: React.FC = () => {
       );
       console.log("Login Successful:", response.data);
       alert("Login successful!");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login Failed:", error);
       alert("Login failed. Check credentials.");
