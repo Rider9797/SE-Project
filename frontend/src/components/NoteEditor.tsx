@@ -3,19 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, message } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-<<<<<<< HEAD
-
-const { TextArea } = Input;
-
-const NoteEditor: React.FC = () => {
-    
-=======
 import { authedApi } from './Dashboard';
 const { TextArea } = Input;
 
 const NoteEditor: React.FC = () => {
 
->>>>>>> 30805fbddd32184003a0de7b5367d00328da1849
   const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -25,19 +17,16 @@ const NoteEditor: React.FC = () => {
   useEffect(() => {
     if (id) {
       // If editing existing note, fetch its data
-<<<<<<< HEAD
-      axios.get(`http://127.0.0.1:5000/notes/${id}`, { withCredentials: true })
-=======
       // axios.get(`http://127.0.0.1:5000/notes/${id}`, { withCredentials: true })
       authedApi.get(`/notes/${id}`)
->>>>>>> 30805fbddd32184003a0de7b5367d00328da1849
         .then(res => {
           setTitle(res.data.title);
           setContent(res.data.content);
         })
-        .catch(() => message.error('Failed to load note'))
+        .catch(() => navigate('/'))
         .finally(() => setLoading(false));
     } else {
+      
       setLoading(false);
     }
   }, [id]);
@@ -46,19 +35,6 @@ const NoteEditor: React.FC = () => {
     try {
       if (id) {
         // Update existing note
-<<<<<<< HEAD
-        await axios.put(`http://127.0.0.1:5000/notes/${id}`, 
-          { title, content },
-          { withCredentials: true }
-        );
-        message.success('Note updated!');
-      } else {
-        // Create new note (shouldn't happen here, but just in case)
-        await axios.post('http://127.0.0.1:5000/notes', 
-          { title, content },
-          { withCredentials: true }
-        );
-=======
         // await axios.put(`http://127.0.0.1:5000/notes/${id}`, 
         //   { title, content },
         //   { withCredentials: true }
@@ -72,7 +48,6 @@ const NoteEditor: React.FC = () => {
         //   { withCredentials: true }
         // );
         await authedApi.post('/notes', { title, content });
->>>>>>> 30805fbddd32184003a0de7b5367d00328da1849
         message.success('Note created!');
       }
       navigate('/dashboard');

@@ -15,13 +15,14 @@ const Login: React.FC = () => {
       });
       
       // Store the received token
-      setAuthToken(response.data.access_token);
+      // setAuthToken(response.data.access_token);
+      localStorage.setItem('token', response.data.access_token);
       
       // Success feedback
       message.success('Login successful!');
       
       // Redirect to dashboard
-      navigate('/dummy');
+      navigate('/Dashboard');
     } 
     
     catch (error) 
@@ -88,7 +89,6 @@ const Login: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
-    </div>
   );
 };
 
