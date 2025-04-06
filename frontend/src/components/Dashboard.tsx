@@ -55,33 +55,7 @@ export const authedApi = axios.create({
   }
 });
 
-// Add response interceptor to handle 401s
-// authedApi.interceptors.response.use(
-//   response => response,
-//   error => {
-//     if (error.response?.status === 401) {
-//       localStorage.removeItem('token');
-//       console.log('Session expired. Please log in againw.');
-//       navigate('/'); // Full page reload clears state
-//     }
-//     return Promise.reject(error);
-//   }
-// );
 
-// Create configured axios instance
-
-// Add response interceptor to handle 401s
-// authedApi.interceptors.response.use(
-//   response => response,
-//   error => {
-//     if (error.response?.status === 401) {
-//       localStorage.removeItem('token');
-//       console.log('Session expired. Please log in againw.');
-//       navigate('/'); // Full page reload clears state
-//     }
-//     return Promise.reject(error);
-//   }
-// );
 
 
 const Dashboard: React.FC = () => {
@@ -92,34 +66,6 @@ const Dashboard: React.FC = () => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const navigate = useNavigate();
 
-  // const authedApi = axios.create({
-  //   baseURL: 'http://127.0.0.1:5000/api',
-  //   withCredentials: true,
-  // headers: {
-  //   Authorization: `Bearer ${localStorage.getItem('token')}`
-  // }
-  // });
-
-  // // Add response interceptor to handle 401s
-  authedApi.interceptors.response.use(
-    response => response,
-    error => {
-      if (error.response?.status === 401) {
-        localStorage.removeItem('token');
-        console.log('Session expired. Please log in againw.');
-        navigate('/'); // Full page reload clears state
-      }
-      return Promise.reject(error);
-    }
-  );
-
-  // const authedApi = axios.create({
-  //   baseURL: 'http://127.0.0.1:5000/api',
-  //   withCredentials: true,
-  // headers: {
-  //   Authorization: `Bearer ${localStorage.getItem('token')}`
-  // }
-  // });
 
   // // Add response interceptor to handle 401s
   authedApi.interceptors.response.use(
