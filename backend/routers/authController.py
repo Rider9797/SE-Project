@@ -55,7 +55,7 @@ def login():
     
     # Here, we directly use user_id (no need to decode the token)
     username = user["username"] 
-    access_token = create_access_token(identity=user_id, expires_delta=timedelta(minutes=25))
+    access_token = create_access_token(identity=user_id, expires_delta=timedelta(seconds=15))
     # Create a session in Redis
     session_id = os.urandom(16).hex()
     session_data = {
