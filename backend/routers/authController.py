@@ -76,16 +76,6 @@ def login():
     )
     
 
-    # response = make_response(redirect("/dummy"))
-    # response.set_cookie(
-    #     key=SESSION_COOKIE_NAME,
-    #     value=session_id,
-    #     max_age=SESSION_DURATION,
-    #     httponly=True,
-    #     secure=True,
-    #     samesite="Lax"
-    # )
-
 
     return response
 

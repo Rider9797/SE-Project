@@ -16,37 +16,6 @@ interface Note {
 
 // Create configured axios instance
 
-
-// const createAuthedApi = (token: string | null, navigate: Function) => {
-//   const authedApi = axios.create({
-//     baseURL: 'http://127.0.0.1:5000/api',
-//     withCredentials: true,
-//   });
-
-//   // Set the Authorization header dynamically
-//   if (token) {
-//     authedApi.defaults.headers['Authorization'] = `Bearer ${token}`;
-//   }
-
-//   // Add response interceptor to handle 401s
-//   authedApi.interceptors.response.use(
-//     response => response,
-//     (error: AxiosError) => {
-//       if (error.response?.status === 401) {
-//         localStorage.removeItem('token');
-//         console.log('Session expired. Please log in again.');
-//         // Redirect to login page using react-router-dom's navigate function
-//         navigate('/Login');
-//       }
-//       return Promise.reject(error);
-//     }
-//   );
-
-//   return authedApi;
-// };
-// const authedApi = new createAuthedApi();
-// const navigate = useNavigate();
-
 export const authedApi = axios.create({
   baseURL: 'http://127.0.0.1:5000/api',
   withCredentials: true,
