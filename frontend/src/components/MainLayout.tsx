@@ -1,13 +1,32 @@
 // components/MainLayout.tsx
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { Button } from 'antd';
-import { SearchOutlined, PlusOutlined, DeleteOutlined, SettingOutlined, FileOutlined } from '@ant-design/icons';
+import { Outlet, useLocation } from 'react-router-dom'; // Added useLocation
+import { Button, Input } from 'antd'; // Added Input import
+import { 
+  SearchOutlined, 
+  PlusOutlined, 
+  DeleteOutlined, 
+  SettingOutlined, 
+  FileOutlined,
+  MessageOutlined,
+  SoundOutlined,
+  FileTextOutlined
+} from '@ant-design/icons';
 import '../styles/MainLayout.css';
 import Logo from './assets/Frame.svg';
 
 const MainLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [searchVisible, setSearchVisible] = useState(false); // New state for search visibility
+  const location = useLocation(); // Get current location/route
+  
+  // Check if we're on the note editor page - adjusted for your URL structure
+  const isNoteEditorPage = location.pathname.includes('/dashboard/') && location.pathname.includes('/edit');
+
+  // Toggle search field visibility
+  const toggleSearch = () => {
+    setSearchVisible(!searchVisible);
+  };
 
   return (
     <div className="main-layout">
@@ -17,7 +36,16 @@ const MainLayout: React.FC = () => {
             <img src={Logo} alt="Logo" className="sidebar-logo" />
           </div>
           <div className="search-container">
-            <SearchOutlined className="search-icon" />
+            {/* Added animated search input */}
+            <div className={`search-input-wrapper ${searchVisible ? 'visible' : ''}`}>
+              <Input 
+                placeholder="Search notes..." 
+                className="search-input"
+                autoFocus={searchVisible}
+              />
+            </div>
+            {/* Search icon is now a toggle button */}
+            <SearchOutlined className="search-icon" onClick={toggleSearch} />
           </div>
         </div>
 
@@ -58,6 +86,25 @@ const MainLayout: React.FC = () => {
             </div>
           </div>
           
+          {/* AI Tools Section - only show on note editor page */}
+          {isNoteEditorPage && (
+            <div className="ai-tools-section">
+              {/* <div className="tools-section-header">AI Tools</div> */}
+              <div className="note-item ai-tool-item">
+                <MessageOutlined className="note-icon" />
+                <span>Text-To-Speech</span>
+              </div>
+              <div className="note-item ai-tool-item">
+                <SoundOutlined className="note-icon" />
+                <span>Quiz-It</span>
+              </div>
+              <div className="note-item ai-tool-item">
+                <FileTextOutlined className="note-icon" />
+                <span>Summarize</span>
+              </div>
+            </div>
+          )}
+          
           <div 
             className="collapse-sidebar" 
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -66,20 +113,6 @@ const MainLayout: React.FC = () => {
               <path d={sidebarCollapsed ? "M9 18L15 12L9 6" : "M15 18L9 12L15 6"} stroke="#4F4F4F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-        </div>
-        <div 
-          className="collapse-sidebar" 
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path 
-              d={sidebarCollapsed ? "M9 18L15 12L9 6" : "M15 18L9 12L15 6"} 
-              stroke="#4F4F4F" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            />
-          </svg>
         </div>
       </div>
       

@@ -1,15 +1,12 @@
-// components/NoteEditor.tsx
 import React, { useState } from 'react';
 import { Input, Button, Dropdown, Menu, Typography } from 'antd';
 import { 
   BoldOutlined, 
   ItalicOutlined, 
-  UnderlineOutlined, 
-  AlignLeftOutlined,
-  MoreOutlined,
-  MessageOutlined,
-  SoundOutlined,
-  FileTextOutlined
+  UnderlineOutlined,
+  CalendarOutlined,
+  TagOutlined,
+  MoreOutlined
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
 
@@ -42,26 +39,43 @@ Overall, it was a good month with a mix of ups and downs. I'm looking forward to
     ]} />
   );
 
+  // More options menu
+  const moreOptions = (
+    <Menu items={[
+      { key: '1', label: 'Delete Note' },
+      { key: '2', label: 'Duplicate Note' },
+      { key: '3', label: 'Export as PDF' },
+    ]} />
+  );
+
   return (
     <div className="note-editor-container">
       <div className="note-editor-header">
-        <Input 
-          className="note-title-input" 
-          value={noteTitle} 
-          onChange={(e) => setNoteTitle(e.target.value)}
-          bordered={false}
-          placeholder="Note Title"
-        />
+        <div className="title-and-more">
+          <Input 
+            className="note-title-input" 
+            value={noteTitle} 
+            onChange={(e) => setNoteTitle(e.target.value)}
+            bordered={false}
+            placeholder="Note Title"
+          />
+          
+          <Dropdown overlay={moreOptions} trigger={['click']} placement="bottomRight">
+            <Button icon={<MoreOutlined />} className="more-options-btn" />
+          </Dropdown>
+        </div>
         
-        <div className="note-meta">
-          <div className="note-meta-item">
-            <span className="meta-label">Date</span>
-            <span className="meta-value">{date}</span>
+        <div className="meta-container">
+          <div className="meta-item">
+            <CalendarOutlined className="meta-icon" />
+            <div className="meta-label">Date</div>
+            <div className="meta-value">{date}</div>
           </div>
           
-          <div className="note-meta-item">
-            <span className="meta-label">Tags</span>
-            <span className="meta-value">{tags.join(', ')}</span>
+          <div className="meta-item">
+            <TagOutlined className="meta-icon" />
+            <div className="meta-label">Tags</div>
+            <div className="meta-value">{tags.join(', ')}</div>
           </div>
         </div>
       </div>
@@ -83,18 +97,6 @@ Overall, it was a good month with a mix of ups and downs. I'm looking forward to
             <Button className="icon-button"><ItalicOutlined /></Button>
             <Button className="icon-button"><UnderlineOutlined /></Button>
           </div>
-        </div>
-        
-        <div className="toolbar-right">
-          <Button className="action-button" icon={<MessageOutlined />}>
-            <span className="button-text">Text-To-Speech</span>
-          </Button>
-          <Button className="action-button" icon={<SoundOutlined />}>
-            <span className="button-text">Quiz-It</span>
-          </Button>
-          <Button className="action-button" icon={<FileTextOutlined />}>
-            <span className="button-text">Summarize</span>
-          </Button>
         </div>
       </div>
 
