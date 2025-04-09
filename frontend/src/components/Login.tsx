@@ -3,13 +3,12 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Flex, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { setAuthToken } from '../utils/authorisation'; // Import auth utility
+import { setAuthToken } from '../utils/authorisation';
 import LogoImage from "./assets/Frame.svg";
-import LogoWord from "./assets/Note Genius.svg";
+import GoogleIcon from "./assets/GoogleIcon.svg"; // Add Google icon SVG
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-
 
   const onFinish = async (values: { email: string; password: string }) => {
     try {
@@ -17,18 +16,10 @@ const Login: React.FC = () => {
         withCredentials: true
       });
 
-      // Store the received token
-      // setAuthToken(response.data.access_token);
       localStorage.setItem('token', response.data.access_token);
-
-      // Success feedback
       message.success('Login successful!');
-
-      // Redirect to dashboard
       navigate('/Dashboard');
-    }
-
-    catch (error) {
+    } catch (error) {
       console.error('Login Failed:', error);
       message.error('Login failed. Please check your credentials.');
     }
@@ -38,56 +29,86 @@ const Login: React.FC = () => {
     <div className="login-container">
       <div className="logo-wrapper">
         <img src={LogoImage} alt="Logo" className="login-logo" />
-        <img src={LogoWord} alt="Logo-Word" className="login-logo-word" />
+        <div className="note-genius-text">Note Genius</div>
       </div>
+
+      <div className="login-headings">
+        <h1 className="main-heading">Log in to your account</h1>
+        <p className="sub-heading">Enter your login information</p>
+      </div>
+
       <Form
         name="login"
         initialValues={{ remember: true }}
-        style={{ maxWidth: 360 }}
+        className="login-form"
         onFinish={onFinish}
       >
         <Form.Item
           name="email"
           rules={[{ required: true, message: "Please input your Email!" }]}
-          style={{ marginBottom: 10 }}
         >
-          <Input prefix={<UserOutlined />} placeholder="Email" />
+          <Input
+            placeholder="email@domain.com"
+            className="custom-input"
+          />
         </Form.Item>
+
         <Form.Item
           name="password"
           rules={[{ required: true, message: "Please input your Password!" }]}
-          style={{ marginBottom: 20 }}
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
-        </Form.Item>
-        <Form.Item>
-          <Flex justify="space-between" align="center">
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
-            <a href="#" className="forgot-password-link">
-              Forgot password
-            </a>
-          </Flex>
+          <Input.Password
+            placeholder="password"
+            className="custom-input"
+          />
         </Form.Item>
 
-        <Form.Item style={{ marginBottom: 10 }}>
-          <Button block type="primary" htmlType="submit" className="login-btn">
-            Log in
-          </Button>
-        </Form.Item>
-
-        <div className="new-user-text" style={{ textAlign: 'center', marginBottom: 0, color: 'white' }}>
-          <span>New user?</span>
-          <hr style={{ width: '100%', margin: '0px 0' }} />
+        <div className="remember-forgot">
+          <div className="remember-me">
+            <Checkbox />
+            <span>Remember me</span>
+          </div>
+          <a className="forgot-password">Forgot Password?</a>
         </div>
 
-        <Form.Item style={{ marginTop: 10 }}>
-          <Button block type="default" onClick={() => navigate("/signup")} className="signup-btn">
-            Create an Account
-          </Button>
-        </Form.Item>
+        <Button
+          block
+          type="primary"
+          htmlType="submit"
+          className="login-btn"
+        >
+          Log in
+        </Button>
+
+        <div className="divider-with-text">
+          <div className="divider" />
+          <span className="divider-text">New to Note Genius?</span>
+          <div className="divider" />
+        </div>
+
+        <Button
+          block
+          className="create-account-btn"
+          onClick={() => navigate("/signup")}
+        >
+          Create an Account
+        </Button>
+
+        {/* <div className="divider-with-text">
+          <div className="divider" />
+          <span className="divider-text">or continue with</span>
+          <div className="divider" />
+        </div>
+
+        <Button className="google-btn">
+          <img src={GoogleIcon} alt="Google icon" className="google-icon" /> {/* Add className }
+          <span>Google</span>
+        </Button> */}
       </Form>
+
+      <div className="footer-text">
+        By clicking continue, you agree to our Terms of Service and Privacy Policy
+      </div>
     </div>
   );
 };
