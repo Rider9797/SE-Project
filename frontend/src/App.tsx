@@ -3,7 +3,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./components/Dashboard";
-import NoteEditor from './components/NoteEditor';
+import NoteEditor from "./components/NoteEditor";
 
 function App() {
   return (
@@ -11,9 +11,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/notes/:id/edit" element={<NoteEditor />} />
+        <Route path="/dashboard" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path=":id/edit" element={<NoteEditor />} />
         </Route>
       </Routes>
     </Router>
