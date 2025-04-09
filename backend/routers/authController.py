@@ -8,6 +8,7 @@ from flask_jwt_extended import create_access_token
 # from flask_login import login_user
 from models.users import create_user, verify_user
 from config import redis_client
+import logging
 
 auth_routes = Blueprint("auth_routes", __name__)
 
@@ -39,7 +40,8 @@ def login():
     data = request.json
     email = data.get("email")
     password = data.get("password")
-
+    
+    
     # Validate user credentials
     user = verify_user(email, password)
     if not user:
@@ -47,15 +49,8 @@ def login():
 
     user_id = str(user["_id"])
 
-
-    # login_user(user, remember = True)
-    # Generate a JWT token (for your internal use if needed)
-    # access_token = create_access_token(identity=user_id, expires_delta=timedelta(seconds=25))
-    
-    
-    # Here, we directly use user_id (no need to decode the token)
     username = user["username"] 
-    access_token = create_access_token(identity=user_id, expires_delta=timedelta(seconds=15))
+    access_token = create_access_token(identity=user_id, expires_delta=timedelta(minutes=15))
     # Create a session in Redis
     session_id = os.urandom(16).hex()
     session_data = {

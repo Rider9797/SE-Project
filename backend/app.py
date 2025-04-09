@@ -7,25 +7,21 @@ import os
 from config import SECRET_KEY, redis_client  # import config variables and clients
 from routers.authController import auth_routes
 from routers.notesController import notes_routes
+from routers.searchController import search_routes
 
 load_dotenv()  # Ensure env variables are loaded
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
-CORS(app,
-     resources= {
-         r"/*": {  # Apply to all routes
-             "origins": "http://localhost:5173",
-             "supports_credentials": True,
-             "allow_headers": ["Content-Type", "Authorization"],
-             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-         }
-         })
+
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173","supports_credentials": True}})
 
 jwt = JWTManager(app)
 
 app.register_blueprint(auth_routes, url_prefix='/auth')
 app.register_blueprint(notes_routes, url_prefix='/api')
+app.register_blueprint(search_routes, url_prefix='/searches')
 
 if __name__ == '__main__':
     app.run(debug=True)

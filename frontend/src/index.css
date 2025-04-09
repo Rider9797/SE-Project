@@ -1,211 +1,320 @@
+/* index.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #181717;
-
+  background-color: #1A1818;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
-  display: grid;
-  place-items: center;
-  min-width: 300px;
-  min-height: 25vh;
-  padding-top: 200px;  /* Push content down */
-  transform: scale(1.35); /* Scale everything by 1.2 times */
-  transform-origin: center;
+  overflow: hidden; /* Add this */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 320px;
+  min-height: 100vh;
 }
 
+/* Make all elements stay within bounds */
+* {
+  box-sizing: border-box;
+}
+
+/* Logo styles */
 .logo-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px; /* Space between logo and word */
-  margin-bottom: 40px; /* Add spacing below */
-  margin-top: 0; /* Move only the logo up */
+  text-align: center;
+  margin-bottom: 3px; /* Reduced from 30px */
 }
 
 
 .login-logo {
-  width: 100px; /* Adjust size */
-  height: auto;
+  width: 128px;
+  height: 128px;
 }
 
-.login-logo-word {
-  width: 150px; /* Adjust size */
-  height: auto;
+.note-genius-text {
+  color: #FFF;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 72px;
+  letter-spacing: -0.48px;
+  margin-top: 6px;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Headings */
+.login-headings {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-button {
-  border-radius: 10 px;
-  border: 2px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+.main-heading {
+  color: #FFF;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 36px;
+  letter-spacing: -0.24px;
+}
+
+.sub-heading {
+  color: #828282;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+/* Form styles */
+.login-form {
+  width: 400px;
+  max-width: 400px; /* Add this */
+  position: relative;
+  margin: 0 auto; /* Center the form */
+}
+
+.custom-input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #E0E0E0;
+  background: #FFF;
+  font-size: 20px;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #ebe0e0;
+  color: #828282;
+  margin-bottom: -10px;
+  margin-top: -10px;
+  box-sizing: border-box; /* Add this */
+}
+
+/* Remember me & Forgot password */
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #828282;
+  font-size: 15px;
+}
+
+.forgot-password {
+  color: #828282;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #111bdf;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
-
-/* Default checkbox border */
-.ant-checkbox .ant-checkbox-inner {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;  /* Slightly rounded */
-  border: 2px solid #3f3f44;  /* Change border color */
+/* Divider styles */
+.divider-with-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0;
 }
 
-/* Checkbox when checked */
-/* Change border and background color when hovering over the checkbox */
-.ant-checkbox-wrapper:hover .ant-checkbox-inner {
-  border-color: #d0d0d4 !important;  /* Force orange border */
-  background-color: #2e2c2a !important; /* Light orange background */
+.divider {
+  flex: 1;
+  height: 1px;
+  background: #E6E6E6;
 }
 
-/* Ensure the background color only changes when NOT checked */
-.ant-checkbox:not(.ant-checkbox-checked):hover .ant-checkbox-inner {
-  background-color: #53514e !important; 
+.divider-text {
+  color: #828282;
+  font-size: 16px;
 }
 
+/* Button styles */
+.login-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: #464747 !important;
+  color: #FFF !important;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  border: none !important;
+  margin-bottom: -10px; /* Pulls the headings closer to the logo */
 
-/* Change tick mark color */
-.ant-checkbox-checked .ant-checkbox-inner::after {
-  border-color: #f2f5f2 !important; /* Makes the checkmark white */
+}
+
+.create-account-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: #464747 !important;
+  color: #FFF !important;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  border: none !important;
+  margin-top: -10px; /* Pulls the headings closer to the logo */
+  margin-bottom: -10px; /* Pulls the headings closer to the logo */
+}
+
+.google-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: #EEE !important;
+  color: #000 !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-container .google-btn img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+/* Footer text */
+.footer-text {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 400px;
+  color: #828282;
+  text-align: center;
+  font-size: 12px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Checkbox overrides */
+.ant-checkbox-inner {
+  width: 20px !important;
+  height: 20px !important;
+  border: 1px solid #828282 !important;
+  border-radius: 4px !important;
 }
 
 .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #393734 !important;  /* Orange background */
-  border-color: #32302f !important;  /* Orange border */
+  background-color: #828282 !important;
+  border-color: #828282 !important;
 }
-/* Change the color of the checkbox label text */
+
 .ant-checkbox-wrapper {
-  color: #74727c; /* Change to your desired color */
-  font-size: 11px; /* Adjust font size if needed */
-  font-weight: none; /* Make it bold if required */
+  color: #828282 !important;
+  font-size: 15px !important;
 }
 
-/* Change color on hover */
-.ant-checkbox-wrapper:hover {
-  color: #8b8894; /* Lighter shade on hover */
+/* bro please
+
+
+
+
+
+*/
+/* Signup Specific Styles */
+.signup-container {
+  padding: 20px 0; /* Changed from 20px */
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
-.forgot-password-link {
-  font-size: 11px;
-  font-weight: normal; /* Or lighter, if you want it thinner */
-  color: #74727c; /* Optional: Change color to a lighter shade */
-  text-decoration: none; /* Optional: Underline for emphasis */
+.signup-headings {
+  text-align: center;
+  margin-bottom: 20px; /* Reduced spacing */
+  margin-top: -10px; /* Pulls the headings closer to the logo */
 }
 
-.forgot-password-link:hover {
-  color: #8b8894; /* Change color on hover */
-  text-decoration: none; /* Add underline on hover */
+.signup-form {
+  width: 400px;
+  max-width: 400px; /* Add this */
+  position: relative;
+  margin: 0 auto; /* Center the form */
 }
 
-/* Center the button in the parent container (Form.Item) */
-/* Center the button in the parent container (Form.Item) */
-.ant-form-item {
-  display: flex !important;
-  justify-content: center !important; /* Center the button horizontally */
-  align-items: center !important;     /* Center the button vertically if needed */
-  width: 100%; /* Ensure the form item takes up full width */
+.signup-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: #464747 !important;
+  color: #FFF !important;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  border: none !important;
+  margin-top: -10px; /* Pulls the headings closer to the logo */
+  margin-bottom: -10px; /* Pulls the headings closer to the logo */
+
 }
 
-/* Styling for the button itself */
-.ant-btn-primary {
-  background-color: #514f4d !important;  /* Change background color */
-  border-color: #575350 !important;  /* Change border color */
-  color: white !important;  /* Text color */
-  font-weight: bold;
-  font-size: 14px;
-  padding: 0px 100px;
-  border-radius: 8px; /* Rounded corners */
-  transition: all 0.3s ease-in-out;
-  width: 100% !important;  /* Make the button take up the full width of its container */
-  max-width: 600px !important; /* Optional: Limit the button width */
-  margin: 0 auto !important; /* Centers the button horizontally */
-}
+.login-now-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: #464747 !important;
+  color: #FFF !important;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  border: none !important;
+  margin-top: -10px; /* Pulls the headings closer to the logo */
+  margin-bottom: -10px; /* Pulls the headings closer to the logo */
 
-/* Hover effect */
-.ant-btn-primary:hover {
-  background-color: #b6b1ad !important;  /* Darker orange on hover */
-  border-color: #a4a19f !important;
-}
-
-/* Focus effect */
-.ant-btn-primary:focus,
-.ant-btn-primary:active {
-  background-color: #a4a19f !important;
-  border-color: #a4a19f !important;
-}
-
-.ant-btn-default {
-  background-color: #514f4d !important;  /* Change background color */
-  border-color: #575350 !important;  /* Change border color */
-  color: white !important;  /* Text color */
-  font-weight: bold;
-  font-size: 14px;
-  padding: 0px 60px;
-  border-radius: 8px; /* Rounded corners */
-  transition: all 0.3s ease-in-out;
-  max-width: 600px !important; /* Optional: Limit the button width */
-  width: 100% !important;  /* Make the button take up the full width of its container */
-  margin: 0 auto !important; /* Centers the button horizontally */
-}
-
-.ant-btn-default:hover {
-  background-color: #b6b1ad !important;  /* Darker orange on hover */
-  border-color: #a4a19f !important;
-}
-
-/* Focus effect */
-.ant-btn-default:focus,
-.ant-btn-default:active {
-  background-color: #a4a19f !important;
-  border-color: #a4a19f !important;
 }
 
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+
+.signup-form .custom-input::placeholder {
+  color: #828282;
+  opacity: 1;
 }
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+/* Enhanced Divider Styles */
+.divider-with-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0;
+  width: 100%;
+}
+
+.divider {
+  flex: 1;
+  height: 1px;
+  background: #E6E6E6;
+}
+
+.divider-text {
+  color: #828282;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  width: 1920px;
+  background: #1f1f1f;
+}
+
+/*
+
+
+
+
+*/

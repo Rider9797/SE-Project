@@ -1,0 +1,472 @@
+/* styles/MainLayout.css */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap');
+
+/* Main Layout */
+.main-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw; /* Full viewport width */
+  background-color: #181818;
+  font-family: 'Source Sans Pro', sans-serif;
+  overflow: hidden; /* Prevent any scrolling */
+}
+
+/* Sidebar Styles */
+.sidebar {
+  display: flex;
+  width: 300px;
+  padding: 30px 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  flex-shrink: 0;
+  align-self: stretch;
+  background: #181818;
+  position: relative;
+}
+
+.sidebar-header {
+  display: flex;
+  padding: 0 20px;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+}
+
+.logo {
+  width: 33px;
+  height: 33px;
+}
+
+.sidebar-logo {
+
+  width: 33px;
+  height: 33px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon {
+  width: 24px;
+  height: 24px;
+  color: #FFF;
+  cursor: pointer;
+}
+
+/* New Note Button */
+.new-note-container {
+  display: flex;
+  padding: 0 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.new-note-btn {
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: none !important;
+  color: #FFF !important;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  height: auto;
+  box-shadow: none;
+}
+
+/* Notes Section */
+.notes-section {
+  display: flex;
+  padding: 0 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  align-self: stretch;
+  flex-grow: 1;
+}
+
+.all-notes-header {
+  color: rgba(255, 255, 255, 0.60);
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-align: center;
+  width: 100%;
+}
+
+.note-list-items {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2px;
+}
+
+.note-item {
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #FFF;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.note-item.active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.note-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.note-icon {
+  color: #6F6F6F;
+  font-size: 16px;
+}
+
+.more-section {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+.note-list-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.collapse-sidebar {
+  position: absolute;
+  bottom: 20px;
+  right: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  overflow: auto; /* Allow scrolling only inside content */
+  background-color: #181818;
+  padding: 24px;
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+  /* Remove width: 1920px; */
+  display: flex;
+  min-height: 100vh;
+  background: #181818;
+  width: 100%; /* Add this */
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 100%; /* Prevent horizontal overflow */
+  margin: 0 auto;
+}
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;/* MainLayout.css updated styles */
+
+  /* Main Layout */
+  .main-layout {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    background-color: #181818;
+    font-family: 'Source Sans Pro', sans-serif;
+    overflow: hidden; /* Prevent scrollbars */
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    width: 280px;
+    min-width: 280px; /* Ensure minimum width */
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    background: #181818;
+    position: relative;
+    height: 100%;
+    overflow-y: auto; /* Allow scrolling in sidebar if needed */
+  }
+  
+  /* Main Content Styles */
+  .main-content {
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #181818;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Dashboard Styles */
+  .dashboard-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px; /* Set max width instead of fixed width */
+    margin: 0 auto; /* Center the content */
+    background: #1f1f1f;
+  }
+  
+  .dashboard-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 20px 0;
+  }
+  
+  /* Empty State */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    margin-bottom: 40px;
+    width: 100%;
+    max-width: 600px; /* Limit width for better readability */
+  }
+  
+  /* Recent Notes Section */
+  .recent-notes-section {
+    width: 100%;
+    padding: 20px;
+    max-width: 1000px; /* Limit width for better layout */
+    margin: 0 auto;
+  }
+  
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    width: 100%;
+    padding: 0 20px; /* Add padding instead of fixed margins */
+  }
+  
+  .note-card {
+    background-color: #232323;
+    border-radius: px;
+    overflow: hidden;
+    cursor: pointer;
+    height: 150px; /* Fixed height for consistency */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+    }
+    
+    .notes-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sidebar {
+      width: 180px;
+      min-width: 180px;
+    }
+    
+    .notes-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  padding: 40px;
+  margin-bottom: 40px;
+}
+
+.empty-icon {
+  margin-bottom: 20px;
+}
+
+.empty-title {
+  color: #FFF !important;
+  font-family: 'Source Sans Pro', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin-bottom: 10px !important;
+  text-align: center;
+
+}
+
+.empty-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Recent Notes Section */
+.recent-notes-section {
+  width: 100%;
+  padding: 20px 0;
+}
+
+.recent-notes-title {
+  color: #FFF !important;
+  font-family: 'Source Sans Pro', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin-bottom: 40px !important;
+  text-align: center;
+  margin-top: -65px !important; /* Pulls the title closer to the logo */
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 40px;
+}
+
+.note-card {
+  background-color: #232323;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.note-card-content {
+  padding: 16px;
+}
+
+.note-card-title {
+  color: #FFF;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.note-card-date {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.note-card-preview {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Adjustments for Ant Design components */
+.ant-btn > .anticon + span {
+  margin-left: 8px;
+}
+
+/*
+
+
+sidebar collapsing shit
+
+
+*/
+
+/* Add transition to sidebar */
+.sidebar {
+  transition: all 0.6s ease; /*change accordingly*/
+  overflow: hidden;
+}
+
+/* Collapsed state */
+.sidebar.collapsed {
+  width: 80px !important; /* Collapsed width */
+  min-width: 80px !important;
+}
+
+/* Hide elements when collapsed */
+.sidebar.collapsed .sidebar-header > div:not(.logo),
+.sidebar.collapsed .new-note-btn span,
+.sidebar.collapsed .all-notes-header,
+.sidebar.collapsed .note-item span,
+.sidebar.collapsed .more-section {
+  display: none;
+}
+
+/* Adjust logo size when collapsed */
+.sidebar.collapsed .sidebar-logo {
+  width: 33px;
+  height: 33px;
+}
+
+/* Center items when collapsed */
+.sidebar.collapsed .note-item {
+  justify-content: center;
+}
+
+/* Rotate collapse icon */
+.collapse-sidebar svg {
+  transition: transform 0.6s ease; /*change accordingly*/
+}
+
+.sidebar.collapsed .collapse-sidebar svg {
+  transform: rotate(180deg);
+}
+/* Ensure smooth resizing of main content */
+.main-content {
+  transition: margin-left 0.6s ease; /*change accordingly*/
+}
+
+.sidebar:not(.collapsed) + .main-content {
+  margin-left: 300px;
+}
+
+.sidebar.collapsed + .main-content {
+  margin-left: 80px;
+}
+
+/* Adjust padding for collapsed state */
+.sidebar.collapsed .notes-section {
+  padding: 0 10px;
+}
+
+.sidebar.collapsed .note-item {
+  padding: 10px 0;
+}

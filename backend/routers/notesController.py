@@ -1,43 +1,24 @@
+from flask import make_response
+# import weasyprint
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.notes import create_note, get_notes_by_user, get_note_by_id, update_note_content, delete_note
+from models.notes import create_note, get_notes_by_user, get_note_by_id, update_note_content, delete_note, get_pdf_note
 from bson.objectid import ObjectId
 from datetime import datetime
-# from middleware.authentication import authentication
-
+# import pdfkit
 notes_routes = Blueprint("notes_routes", __name__)
-
-# @notes_routes.route("/notes", methods=["GET"])
-# @jwt_required()
-# def get_user_notes():  # Renamed from get_notes to avoid conflict
-#     user_id = get_jwt_identity()
-#     notes = get_notes_by_user(user_id)
-#     processed_notes = []
-#     for note in notes:
-#         note['_id'] = str(note['_id'])
-#         note['created_at'] = note['created_at'].isoformat()
-#         processed_notes.append(note)
-#     return jsonify(processed_notes), 200
 
 @notes_routes.route("/notes", methods=["GET"])
 @jwt_required()
-def get_user_notes():
-    try:
-        user_id = get_jwt_identity()
-        if not user_id:
-            return jsonify({"message": "Invalid token, no user found."}), 422
-        notes = get_notes_by_user(user_id)
-        if not notes:
-            return jsonify({"message": "No notes found."}), 404
-        processed_notes = []
-        for note in notes:
-            note['_id'] = str(note['_id'])
-            note['created_at'] = note['created_at'].isoformat()
-            processed_notes.append(note)
-        return jsonify(processed_notes), 200
-    except Exception as e:
-        return jsonify({"message": "Error processing the request", "error": str(e)}), 500
-
+def get_user_notes():  # Renamed from get_notes to avoid conflict
+    user_id = get_jwt_identity()
+    notes = get_notes_by_user(user_id)
+    processed_notes = []
+    for note in notes:
+        note['_id'] = str(note['_id'])
+        note['created_at'] = note['created_at'].isoformat()
+        processed_notes.append(note)
+    return jsonify(processed_notes), 200
 
 @notes_routes.route("/notes/<note_id>", methods=["GET"])
 @jwt_required()
@@ -52,9 +33,7 @@ def get_single_note(note_id):  # New endpoint to get single note
 
 @notes_routes.route("/notes/create", methods=["POST"])
 @jwt_required()
-# @authentication
 def create_note_route():
-    print("Route hit!")
     data = request.json
     user_id = get_jwt_identity()
     note_id = create_note(
@@ -93,3 +72,11 @@ def delete_note_route(note_id):
     
     delete_note(note_id)
     return jsonify({"msg": "Note deleted"}), 200
+
+
+
+
+@notes_routes.route("/notes/<note_id>/pdf", methods=["GET"])
+def get_pdf_note_route(note_id):
+    # Call the get_pdf_note function, passing the note_id
+    return get_pdf_note(note_id)  # The note_id is used to generate the PDF
