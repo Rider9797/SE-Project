@@ -1,7 +1,7 @@
 // components/MainLayout.tsx
 import React, { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom'; // Added useLocation
-import { Button, Input } from 'antd'; // Added Input import
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { Button, Input, Modal } from 'antd'; // Added Modal import
 import { 
   SearchOutlined, 
   PlusOutlined, 
@@ -14,11 +14,15 @@ import {
 } from '@ant-design/icons';
 import '../styles/MainLayout.css';
 import Logo from './assets/Frame.svg';
+import { removeAuthToken } from '../utils/authorisation'; // Import auth utils
+import axios from 'axios';
 
 const MainLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [searchVisible, setSearchVisible] = useState(false); // New state for search visibility
+  const [searchVisible, setSearchVisible] = useState(false); // State for search visibility
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false); // Added for logout modal
   const location = useLocation(); // Get current location/route
+  const navigate = useNavigate(); // Added for navigation
   
   // Check if we're on the note editor page - adjusted for your URL structure
   const isNoteEditorPage = location.pathname.includes('/dashboard/') && location.pathname.includes('/edit');
@@ -28,15 +32,43 @@ const MainLayout: React.FC = () => {
     setSearchVisible(!searchVisible);
   };
 
+  // Handle logout functionality
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://127.0.0.1:5000/auth/logout', {}, {
+        withCredentials: true
+      });
+      removeAuthToken();
+      window.location.href = '/'; // Redirect to login
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div className="main-layout">
+      {/* Add logout confirmation modal */}
+      <Modal
+        title="Confirm Logout"
+        open={isLogoutModalVisible}
+        onOk={handleLogout}
+        onCancel={() => setIsLogoutModalVisible(false)}
+        okText="Logout"
+        cancelText="Cancel"
+      >
+        <p>Are you sure you want to log out?</p>
+      </Modal>
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <div className="logo">
+          <div 
+            className="logo"
+            onClick={() => navigate('/dashboard')} // Add navigation to dashboard
+            style={{ cursor: 'pointer' }}
+          >
             <img src={Logo} alt="Logo" className="sidebar-logo" />
           </div>
           <div className="search-container">
-            {/* Added animated search input */}
+            {/* Animated search input */}
             <div className={`search-input-wrapper ${searchVisible ? 'visible' : ''}`}>
               <Input 
                 placeholder="Search notes..." 
@@ -80,7 +112,9 @@ const MainLayout: React.FC = () => {
               <DeleteOutlined className="note-icon" />
               <span>Trash</span>
             </div>
-            <div className="note-item">
+            <div className="note-item"
+              onClick={() => setIsLogoutModalVisible(true)} // Add logout modal trigger
+            >
               <SettingOutlined className="note-icon" />
               <span>Settings</span>
             </div>
