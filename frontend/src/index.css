@@ -308,80 +308,9 @@ body {
   background: #1f1f1f;
 }
 
-/* @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
-
-#root {
-  height: 100vh;
-}
-
-.ant-layout {
-  background: #1f1f1f;
-  font-family: 'Source Sans Pro', sans-serif;
-}
-
-.sidebar-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 30px 0;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  margin-bottom: 30px;
-}
-
-.logo {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.ant-menu {
-  padding: 0 20px;
-}
-
-.ant-menu-item {
-  color: rgba(255, 255, 255, 0.6) !important;
-  margin: 4px 0 !important;
-  border-radius: 3px !important;
-}
-
-.ant-menu-item:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-}
-
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 20px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.dashboard-content {
-  padding: 35px 50px;
-  min-height: calc(100vh - 64px);
-}
-
-.note-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 25px !important;
-}
-
-.note-card .ant-card-head {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.ant-empty-description {
-  color: rgba(255, 255, 255, 0.6) !important;
-} */
-
 /*
 
 
 
+
 */
-/* Main Layout */
