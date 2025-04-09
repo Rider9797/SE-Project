@@ -1,67 +1,231 @@
-// components/NoteEditor.tsx
-import React, { useState } from 'react';
-import { Input, Button, Dropdown, Menu, Typography } from 'antd';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Input, Button, Dropdown, Menu, message } from 'antd';
 import { 
   BoldOutlined, 
   ItalicOutlined, 
-  UnderlineOutlined, 
-  AlignLeftOutlined,
+  UnderlineOutlined,
+  CalendarOutlined,
+  TagOutlined,
   MoreOutlined,
-  MessageOutlined,
-  SoundOutlined,
-  FileTextOutlined
+  FilePdfOutlined,
+  SaveOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
-
-const { Title } = Typography;
+import { useParams, useNavigate } from 'react-router-dom';
+import { authedApi } from './api';
 
 const NoteEditor: React.FC = () => {
-  const [noteTitle, setNoteTitle] = useState('My Goals for the Next Year');
-  const [noteContent, setNoteContent] = useState(`It's hard to believe that June is already over! Looking back on the month, there were a few highlights that stand out to me.
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [note, setNote] = useState<{
+    _id: string;
+    title: string;
+    content: string;
+    created_at: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSavingRef = useRef(false);
 
-One of the best things that happened was getting promoted at work. I've been working really hard and it's great to see that effort recognized. It's also exciting to have more responsibility and the opportunity to contribute to the company in a bigger way. I'm looking forward to taking on new challenges and learning as much as I can in my new role.
+  // Fetch note data
+  useEffect(() => {
+    const fetchNote = async () => {
+      try {
+        setLoading(true);
+        const response = await authedApi.get(`/notes/${id}`);
+        setNote(response.data);
+      } catch (error) {
+        message.error('Failed to load note');
+        navigate('/Dashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-I also had a great time on my vacation to Hawaii. The beaches were beautiful and I loved trying all of the different types of Hawaiian food. It was nice to relax and get away from the daily grind for a bit. I'm so grateful to have had the opportunity to take a trip like that.
+    if (id) {
+      fetchNote();
+    }
 
-On the downside, I feel like I didn't make as much progress on my fitness goals as I would have liked. I was really busy with work and didn't make it to the gym as often as I planned. I'm going to try to be more consistent in July and make exercise a higher priority. I know it will be good for my physical and mental health.
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [id, navigate]);
 
-I also had a few rough patches in my relationships this month. I had a couple of misunderstandings with friends and it was hard to navigate those conflicts. But I'm glad we were able to talk things through and move past them. I value my relationships and I want to make sure I'm always working to be a good friend.
+  // Auto-save function
+  const autoSaveNote = useCallback(async () => {
+    if (!note || isSavingRef.current) return;
 
-Overall, it was a good month with a mix of ups and downs. I'm looking forward to what July has in store! I'm hoping to make some more progress on my goals and spend quality time with the people I care about.`);
+    isSavingRef.current = true;
+    try {
+      await authedApi.put(`/notes/${id}`, {
+        title: note.title,
+        content: note.content
+      });
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+    } finally {
+      isSavingRef.current = false;
+    }
+  }, [id, note]);
 
-  const [date] = useState('21/06/2022');
-  const [tags] = useState(['Personal']);
-  
-  // Format options
+  // Debounced auto-save
+  const debouncedAutoSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      autoSaveNote();
+    }, 2000);
+  }, [autoSaveNote]);
+
+  // Manual save function
+  const handleManualSave = async () => {
+    if (!note) return;
+    
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    try {
+      message.loading({ content: 'Saving...', key: 'saveNote' });
+      await authedApi.put(`/notes/${id}`, {
+        title: note.title,
+        content: note.content
+      });
+      message.success({ content: 'Note saved!', key: 'saveNote' });
+    } catch (error) {
+      message.error({ content: 'Failed to save note', key: 'saveNote' });
+    }
+  };
+
+  const handleContentChange = (content: string) => {
+    if (!note) return;
+    setNote({ ...note, content });
+    debouncedAutoSave();
+  };
+
+  const handleTitleChange = (title: string) => {
+    if (!note) return;
+    setNote({ ...note, title });
+    debouncedAutoSave();
+  };
+
+  const handleDeleteNote = async () => {
+    try {
+      await authedApi.delete(`/notes/${id}`);
+      message.success('Note deleted');
+      navigate('/Dashboard');
+    } catch (error) {
+      message.error('Failed to delete note');
+    }
+  };
+
   const paragraphOptions = (
-    <Menu items={[
-      { key: '1', label: 'Paragraph' },
-      { key: '2', label: 'Heading 1' },
-      { key: '3', label: 'Heading 2' },
-      { key: '4', label: 'Heading 3' },
-    ]} />
+    <Menu>
+      <Menu.Item key="p">Paragraph</Menu.Item>
+      <Menu.Item key="h1">Heading 1</Menu.Item>
+      <Menu.Item key="h2">Heading 2</Menu.Item>
+      <Menu.Item key="h3">Heading 3</Menu.Item>
+    </Menu>
   );
+  
+  // More options menu
+  const moreOptions = (
+    <Menu>
+      <Menu.Item 
+        key="save" 
+        icon={<SaveOutlined />}
+        onClick={handleManualSave}
+      >
+        Save Note
+      </Menu.Item>
+      <Menu.Item 
+        key="delete" 
+        icon={<DeleteOutlined />}
+        onClick={handleDeleteNote}
+        danger
+      >
+        Delete Note
+      </Menu.Item>
+      <Menu.Item 
+        key="pdf" 
+        icon={<FilePdfOutlined />}
+        disabled={isExporting}
+        onClick={async () => {
+          setIsExporting(true);
+          try {
+            const response = await fetch(`http://localhost:5000/api/notes/${id}/pdf`, {
+              method: 'GET',
+              credentials: 'include',
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to fetch PDF');
+            }
+        
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+        
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `note_${note?.title || 'untitled'}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            
+            message.success('PDF exported successfully!');
+          } catch (error) {
+            console.error('Error downloading PDF:', error);
+            message.error('Failed to export PDF');
+          } finally {
+            setIsExporting(false);
+          }
+        }}
+      >
+        {isExporting ? 'Exporting...' : 'Export as PDF'}
+      </Menu.Item>
+    </Menu>
+  );
+
+  if (loading || !note) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="note-editor-container">
       <div className="note-editor-header">
-        <Input 
-          className="note-title-input" 
-          value={noteTitle} 
-          onChange={(e) => setNoteTitle(e.target.value)}
-          bordered={false}
-          placeholder="Note Title"
-        />
+        <div className="title-and-more">
+          <Input 
+            className="note-title-input" 
+            value={note.title} 
+            onChange={(e) => handleTitleChange(e.target.value)}
+            bordered={false}
+            placeholder="Note Title"
+          />
+          <Dropdown overlay={moreOptions} trigger={['click']} placement="bottomRight">
+            <Button icon={<MoreOutlined />} className="more-options-btn" />
+          </Dropdown>
+        </div>
         
-        <div className="note-meta">
-          <div className="note-meta-item">
-            <span className="meta-label">Date</span>
-            <span className="meta-value">{date}</span>
+        <div className="meta-container">
+          <div className="meta-item">
+            <CalendarOutlined className="meta-icon" />
+            <div className="meta-label">Date</div>
+            <div className="meta-value">
+              {new Date(note.created_at).toLocaleDateString()}
+            </div>
           </div>
           
-          <div className="note-meta-item">
-            <span className="meta-label">Tags</span>
-            <span className="meta-value">{tags.join(', ')}</span>
+          <div className="meta-item">
+            <TagOutlined className="meta-icon" />
+            <div className="meta-label">Tags</div>
+            <div className="meta-value">Personal</div>
           </div>
         </div>
       </div>
@@ -84,25 +248,13 @@ Overall, it was a good month with a mix of ups and downs. I'm looking forward to
             <Button className="icon-button"><UnderlineOutlined /></Button>
           </div>
         </div>
-        
-        <div className="toolbar-right">
-          <Button className="action-button" icon={<MessageOutlined />}>
-            <span className="button-text">Text-To-Speech</span>
-          </Button>
-          <Button className="action-button" icon={<SoundOutlined />}>
-            <span className="button-text">Quiz-It</span>
-          </Button>
-          <Button className="action-button" icon={<FileTextOutlined />}>
-            <span className="button-text">Summarize</span>
-          </Button>
-        </div>
       </div>
 
       <div className="note-content-area">
         <textarea 
           className="note-content" 
-          value={noteContent} 
-          onChange={(e) => setNoteContent(e.target.value)}
+          value={note.content} 
+          onChange={(e) => handleContentChange(e.target.value)}
           placeholder="Start writing..."
         />
       </div>

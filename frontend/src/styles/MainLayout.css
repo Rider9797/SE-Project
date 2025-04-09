@@ -39,7 +39,6 @@
 }
 
 .sidebar-logo {
-
   width: 33px;
   height: 33px;
 }
@@ -157,6 +156,60 @@
   width: 100%;
 }
 
+/* AI Tools Section - New Addition */
+.ai-tools-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 0 20px;
+  position: relative;
+}
+
+.tools-section-header {
+  color: rgba(255, 255, 255, 0.60);
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+/* Updated AI tool item styling to match specifications */
+.ai-tool-item {
+  display: flex;
+  width: 100%;
+  padding: 12px 15px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  color: #FFF;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.ai-tool-item .note-icon {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+}
+
+.ai-tool-item:hover {
+  background-color: rgba(0, 0, 0, 0.70);
+  transform: translateY(-2px);
+}
+
+.ai-tool-item:active {
+  transform: translateY(0px);
+}
+
 .collapse-sidebar {
   position: absolute;
   bottom: 20px;
@@ -177,144 +230,27 @@
 
 /* Dashboard Styles */
 .dashboard-container {
-  /* Remove width: 1920px; */
   display: flex;
   min-height: 100vh;
   background: #181818;
-  width: 100%; /* Add this */
+  width: 100%;
 }
 
 .dashboard-content {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 100%; /* Prevent horizontal overflow */
+  max-width: 100%;
   margin: 0 auto;
 }
+
 /* Empty State */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;/* MainLayout.css updated styles */
-
-  /* Main Layout */
-  .main-layout {
-    display: flex;
-    height: 100vh;
-    width: 100%;
-    background-color: #181818;
-    font-family: 'Source Sans Pro', sans-serif;
-    overflow: hidden; /* Prevent scrollbars */
-  }
-  
-  /* Sidebar Styles */
-  .sidebar {
-    width: 280px;
-    min-width: 280px; /* Ensure minimum width */
-    padding: 20px 0;
-    display: flex;
-    flex-direction: column;
-    background: #181818;
-    position: relative;
-    height: 100%;
-    overflow-y: auto; /* Allow scrolling in sidebar if needed */
-  }
-  
-  /* Main Content Styles */
-  .main-content {
-    flex: 1;
-    height: 100vh;
-    overflow-y: auto;
-    background-color: #181818;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Dashboard Styles */
-  .dashboard-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 1200px; /* Set max width instead of fixed width */
-    margin: 0 auto; /* Center the content */
-    background: #1f1f1f;
-  }
-  
-  .dashboard-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    padding: 20px 0;
-  }
-  
-  /* Empty State */
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 20px;
-    margin-bottom: 40px;
-    width: 100%;
-    max-width: 600px; /* Limit width for better readability */
-  }
-  
-  /* Recent Notes Section */
-  .recent-notes-section {
-    width: 100%;
-    padding: 20px;
-    max-width: 1000px; /* Limit width for better layout */
-    margin: 0 auto;
-  }
-  
-  .notes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    width: 100%;
-    padding: 0 20px; /* Add padding instead of fixed margins */
-  }
-  
-  .note-card {
-    background-color: #232323;
-    border-radius: px;
-    overflow: hidden;
-    cursor: pointer;
-    height: 150px; /* Fixed height for consistency */
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 220px;
-      min-width: 220px;
-    }
-    
-    .notes-grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .sidebar {
-      width: 180px;
-      min-width: 180px;
-    }
-    
-    .notes-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+  text-align: center;
   padding: 40px;
   margin-bottom: 40px;
 }
@@ -330,7 +266,6 @@
   font-weight: 600 !important;
   margin-bottom: 10px !important;
   text-align: center;
-
 }
 
 .empty-description {
@@ -354,7 +289,7 @@
   font-weight: 600 !important;
   margin-bottom: 40px !important;
   text-align: center;
-  margin-top: -65px !important; /* Pulls the title closer to the logo */
+  margin-top: -65px !important;
 }
 
 .notes-grid {
@@ -401,23 +336,15 @@
   margin-left: 8px;
 }
 
-/*
-
-
-sidebar collapsing shit
-
-
-*/
-
-/* Add transition to sidebar */
+/* Sidebar collapsing functionality */
 .sidebar {
-  transition: all 0.6s ease; /*change accordingly*/
+  transition: all 0.6s ease;
   overflow: hidden;
 }
 
 /* Collapsed state */
 .sidebar.collapsed {
-  width: 80px !important; /* Collapsed width */
+  width: 80px !important;
   min-width: 80px !important;
 }
 
@@ -426,7 +353,9 @@ sidebar collapsing shit
 .sidebar.collapsed .new-note-btn span,
 .sidebar.collapsed .all-notes-header,
 .sidebar.collapsed .note-item span,
-.sidebar.collapsed .more-section {
+.sidebar.collapsed .more-section,
+.sidebar.collapsed .tools-section-header,
+.sidebar.collapsed .ai-tool-item span {
   display: none;
 }
 
@@ -437,36 +366,119 @@ sidebar collapsing shit
 }
 
 /* Center items when collapsed */
-.sidebar.collapsed .note-item {
+.sidebar.collapsed .note-item,
+.sidebar.collapsed .ai-tool-item {
   justify-content: center;
+}
+
+/* When collapsed, make AI tools button rounded */
+.sidebar.collapsed .ai-tool-item {
+  padding: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Fix to ensure icons are visible when collapsed */
+.sidebar.collapsed .ai-tool-item .note-icon {
+  display: block;
+  margin: 0;
 }
 
 /* Rotate collapse icon */
 .collapse-sidebar svg {
-  transition: transform 0.6s ease; /*change accordingly*/
+  transition: transform 0.6s ease;
 }
 
 .sidebar.collapsed .collapse-sidebar svg {
   transform: rotate(180deg);
 }
+
 /* Ensure smooth resizing of main content */
 .main-content {
-  transition: margin-left 0.6s ease; /*change accordingly*/
-}
-
-.sidebar:not(.collapsed) + .main-content {
-  margin-left: 300px;
-}
-
-.sidebar.collapsed + .main-content {
-  margin-left: 80px;
+  transition: margin-left 0.6s ease;
 }
 
 /* Adjust padding for collapsed state */
-.sidebar.collapsed .notes-section {
+.sidebar.collapsed .notes-section,
+.sidebar.collapsed .ai-tools-section {
   padding: 0 10px;
 }
 
 .sidebar.collapsed .note-item {
   padding: 10px 0;
+}
+
+/*
+
+
+
+
+*/
+/* Updated search container to handle animation */
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 32px;
+}
+
+.search-icon {
+  width: 24px;
+  height: 24px;
+  color: #FFF;
+  cursor: pointer;
+  z-index: 10;
+  position: relative;
+  transition: transform 0.6s ease;
+}
+
+/* Search icon rotates slightly when active */
+.search-container:has(.search-input-wrapper.visible) .search-icon {
+  transform: rotate(-360deg);
+}
+
+/* Wrapper for the animated search input */
+.search-input-wrapper {
+  position: absolute;
+  right: 34px; /* Position to the left of the search icon */
+  width: 0;
+  overflow: hidden;
+  transition: width 0.6s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+
+/* When search is visible */
+.search-input-wrapper.visible {
+  width: 180px;
+  opacity: 0.7;
+}
+
+/* Style for the actual input */
+.search-input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px;
+  color: #FFF !important;
+  width: 100%;
+  height: 32px;
+  padding: 4px 8px;
+}
+
+.search-input input {
+  color: #FFF !important;
+  background: transparent !important;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Handle collapsed sidebar state */
+.sidebar.collapsed .search-input-wrapper.visible {
+  display: none;
 }

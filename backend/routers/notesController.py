@@ -23,11 +23,22 @@ def get_user_notes():  # Renamed from get_notes to avoid conflict
 @notes_routes.route("/notes/<note_id>", methods=["GET"])
 @jwt_required()
 def get_single_note(note_id):  # New endpoint to get single note
+
+    print("note_id: ",note_id)
+
+
     user_id = get_jwt_identity()
+
+    print("user id:", user_id)
+
     note = get_note_by_id(note_id)
+
+    print("note over here", note)
     if note and note['user_id'] == user_id:
         note['_id'] = str(note['_id'])
         note['created_at'] = note['created_at'].isoformat()
+
+        print("note before sending:", note)
         return jsonify(note), 200
     return jsonify({"msg": "Note not found"}), 404
 
