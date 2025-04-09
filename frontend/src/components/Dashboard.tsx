@@ -1,136 +1,47 @@
-// components/Dashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Typography, Form } from 'antd';
-import axios from 'axios';
-import {  Note } from './api';
-import { AxiosError } from 'axios';
-import { authedApi, searchApi } from './api'
-// import { useNotes } from './useNotes';
+import { Typography } from 'antd';
+import { Note } from './api';
+import { authedApi } from './api'
 
 const { Title } = Typography;
 
-
-
-// export const authedApi = axios.create({
-//   baseURL: 'http://127.0.0.1:5000/api',
-//   withCredentials: true,
-//   headers: {
-//     Authorization: `Bearer ${localStorage.getItem('token')}`
-//   }
-// });
-
-// export const searchApi = axios.create({
-//   baseURL: 'http://127.0.0.1:5000/searches',
-//   withCredentials: true,
-//   headers: {
-//     Authorization: `Bearer ${localStorage.getItem('token')}`
-//   }
-// });
-
 const Dashboard: React.FC = () => {
-
   const [notes, setNotes] = useState<Note[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const navigate = useNavigate();
-  // Static data for demonstration
+
   authedApi.interceptors.response.use(
     response => response,
     error => {
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
-        console.log('Session expired. Please log in againw.');
-        navigate('/'); // Full page reload clears state
+        navigate('/');
       }
       return Promise.reject(error);
     }
   );
 
-  // Pass token into the hook
-  // useEffect(() => {
-  //   if (token) {
-  //     // Call fetchNotes only after the token is available
-  //     const { notes, loading } = useNotes(token);
-  //   } else {
-  //     navigate('/'); // Redirect if no token found
-  //   }
-  // }, [token, navigate]);
-
-  // if (loading) {
-  //   return <div>Loading...</div>; // Show loading indicator while fetching notes
-  // }
-
   useEffect(() => {
     if (token) {
       authedApi.defaults.headers['Authorization'] = `Bearer ${token}`;
       fetchNotes();
-      // handleCreate();
+    } else {
+      navigate('/');
     }
-    else {
-      console.log("red")
-      navigate('/')
-    }
+  }, [token, navigate]);
 
-  }, [token]);
-
-
-
-  // const fetchNotes = async () => {
-  //   try {
-  //     const response = await authedApi.get('/notes'); // Using the configured instance
-  //     setNotes(response.data);
-  //   } catch (error) {
-  //     console.log('Failed to fetch notes');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // // Import AxiosError type
   const fetchNotes = async () => {
     try {
-      const response = await authedApi.get('/notes'); // Using the configured instance
+      const response = await authedApi.get('/notes');
       setNotes(response.data);
-    } catch (error: unknown) {
-      // Type assertion to handle error as AxiosError
-      if (error instanceof AxiosError && error.response) {
-        if (error.response.status === 401) {
-          // Token might have expired or is invalid, so redirect to login
-          console.log('Session expired. Please log i4n again.');
-          localStorage.removeItem('token');
-          navigate('/')
-        } else if (error.response.status === 422) {
-          // Handle 422 Unprocessable Entity error if needed
-          console.log('Invalid data provided');
-        } else {
-          // Handle other errors
-          console.log(`Failed to fetch notes. Status Code: ${error.response.status}`);
-        }
-      } else {
-        console.log('An unknown error occurred');
-      }
+    } catch (error) {
+      console.error('Failed to fetch notes:', error);
     } finally {
       setLoading(false);
     }
   };
-
-
-
-  // const handleDelete = async (id: string) => {
-  //   try {
-  //     await authedApi.delete(`/notes/${id}`);
-  //     console.log('Note deleted successfully');
-  //     fetchNotes(setNotes, setLoading);
-  //   } catch (error) {
-  //     console.log('Failed to delete note');
-  //   }
-  // };
 
   return (
     <div className="dashboard-container">
@@ -157,13 +68,21 @@ const Dashboard: React.FC = () => {
           <div className="notes-grid">
             {loading ? (
               <div>Loading...</div>
-            ) :(
+            ) : (
               notes.map((note) => (
-                <div key={note._id} className="note-card" onClick={() => navigate(`/notes/${note._id}/edit`)}>
+                <div 
+                  key={note._id} 
+                  className="note-card" 
+                  onClick={() => navigate(`/Dashboard/${note._id}/edit`)}
+                >
                   <div className="note-card-content">
                     <div className="note-card-title">{note.title}</div>
-                    <div className="note-card-date">{note.created_at}</div>
-                    <div className="note-card-preview">{note.content.slice(0, 10)}{note.content.length > 10 ? '...' : ''}</div>
+                    <div className="note-card-date">
+                      {new Date(note.created_at).toLocaleDateString()}
+                    </div>
+                    <div className="note-card-preview">
+                      {note.content.slice(0, 100)}{note.content.length > 100 ? '...' : ''}
+                    </div>
                   </div>
                 </div>
               ))

@@ -1,14 +1,12 @@
-import React from 'react';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Flex, message } from 'antd';
+import React, {useState} from 'react';
+import { Button, Checkbox, Form, Input,message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { setAuthToken } from '../utils/authorisation';
-import LogoImage from "./assets/Frame.svg";
-import GoogleIcon from "./assets/GoogleIcon.svg"; // Add Google icon SVG
+import LogoImage from "./assets/Frame.svg"; 
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState('');
 
   const onFinish = async (values: { email: string; password: string }) => {
     try {
@@ -17,10 +15,11 @@ const Login: React.FC = () => {
       });
 
       localStorage.setItem('token', response.data.access_token);
-      console.log('Login successful!');
+      message.success('Login successful!');
       navigate('/Dashboard');
     } catch (error) {
       console.error('Login Failed:', error);
+      setLoginError('Invalid credentials. Please try again.');
       message.error('Login failed. Please check your credentials.');
     }
   };
@@ -42,10 +41,21 @@ const Login: React.FC = () => {
         initialValues={{ remember: true }}
         className="login-form"
         onFinish={onFinish}
+        validateTrigger="onSubmit"
       >
         <Form.Item
           name="email"
-          rules={[{ required: true, message: "Please input your Email!" }]}
+          rules={[
+            { 
+              required: true,
+              message: "Please input your Email!" 
+            },
+            {
+              type: 'email',
+              message: 'Invalid email format!',
+            },
+          ]}
+          style={{ marginBottom: 34 }}
         >
           <Input
             placeholder="email@domain.com"
@@ -56,6 +66,7 @@ const Login: React.FC = () => {
         <Form.Item
           name="password"
           rules={[{ required: true, message: "Please input your Password!" }]}
+          style={{ marginBottom: 34 }}
         >
           <Input.Password
             placeholder="password"
@@ -70,6 +81,16 @@ const Login: React.FC = () => {
           </div>
           <a className="forgot-password">Forgot Password?</a>
         </div>
+
+        {loginError && (
+          <div className="error-message" style={{ 
+            color: 'red', 
+            textAlign: 'center',
+            marginBottom: '16px'
+          }}>
+            {loginError}
+          </div>
+        )}
 
         <Button
           block
@@ -106,9 +127,9 @@ const Login: React.FC = () => {
         </Button> */}
       </Form>
 
-      {/* <div className="footer-text">
+      <div className="footer-text">
         By clicking continue, you agree to our Terms of Service and Privacy Policy
-      </div> */}
+      </div>
     </div>
   );
 };

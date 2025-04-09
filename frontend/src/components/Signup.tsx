@@ -37,10 +37,13 @@ const SignupForm: React.FC = () => {
         name="signup"
         onFinish={onFinish}
         className="signup-form"
+        validateTrigger="onSubmit"
       >
         <Form.Item
           name="name"
           rules={[{ required: true, message: 'Please input your name!' }]}
+          style={{ marginBottom: 34 }}
+          
         >
           <Input
             prefix={<UserOutlined />}
@@ -52,6 +55,7 @@ const SignupForm: React.FC = () => {
         <Form.Item
           name="username"
           rules={[{ required: true, message: 'Please input your username!' }]}
+          style={{ marginBottom: 34 }}
         >
           <Input
             prefix={<UserOutlined />}
@@ -66,6 +70,7 @@ const SignupForm: React.FC = () => {
             { required: true, message: 'Please input your email!' },
             { type: 'email', message: 'Invalid email format' }
           ]}
+          style={{ marginBottom: 34 }}
         >
           <Input
             prefix={<MailOutlined />}
@@ -81,6 +86,7 @@ const SignupForm: React.FC = () => {
             { min: 6, message: 'Password must be at least 6 characters!' }
           ]}
           hasFeedback
+          style={{ marginBottom: 34 }}
         >
           <Input.Password
             prefix={<LockOutlined />}
@@ -104,6 +110,7 @@ const SignupForm: React.FC = () => {
               },
             }),
           ]}
+          style={{ marginBottom: 34 }}
         >
           <Input.Password
             prefix={<LockOutlined />}
