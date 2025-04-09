@@ -1,4 +1,3 @@
-// components/MainLayout.tsx
 import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Button, Form, Modal, Input, message } from 'antd';
@@ -8,9 +7,9 @@ import {
   DeleteOutlined, 
   SettingOutlined, 
   FileOutlined,
-  MessageOutlined,
-  SoundOutlined,
-  FileTextOutlined
+  SignatureOutlined, // Added for Text-To-Speech
+  SoundOutlined,  // Added for Quiz-It
+  SolutionOutlined // Added for Summarize
 } from '@ant-design/icons';
 import '../styles/MainLayout.css';
 import Logo from './assets/Frame.svg';
@@ -34,12 +33,13 @@ const MainLayout: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const navigate = useNavigate();
   const location = useLocation();
 
   // Check if we're on the note editor page
-  const isNoteEditorPage = location.pathname.includes('/notes/') && location.pathname.includes('/edit');
+  const isNoteEditorPage = location.pathname.includes('/Dashboard/') && location.pathname.includes('/edit');
 
   // Configure axios interceptor
   authedApi.interceptors.response.use(
@@ -115,8 +115,11 @@ const MainLayout: React.FC = () => {
     }
   };
   
-  const handleSearchSubmit = async (value: string) => {
-    if (value.trim().length >= 3) {
+  const handleSearchSubmit = async (e?: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e && e.key !== 'Enter') return;
+    
+    const value = searchQuery.trim();
+    if (value.length >= 3) {
       try {
         const response = await searchApi.get(`/search?q=${encodeURIComponent(value)}`);
         setFilteredNotes(response.data.notes);
@@ -127,6 +130,17 @@ const MainLayout: React.FC = () => {
         );
         setFilteredNotes(fallback);
       }
+    }
+  };
+
+  const toggleSearch = () => {
+    setIsSearchVisible(!isSearchVisible);
+    if (!isSearchVisible) {
+      // Focus the input when search becomes visible
+      setTimeout(() => {
+        const searchInput = document.querySelector('.search-input input') as HTMLInputElement;
+        if (searchInput) searchInput.focus();
+      }, 300);
     }
   };
 
@@ -147,6 +161,22 @@ const MainLayout: React.FC = () => {
       message.error('An unknown error occurred');
     }
     console.error(error);
+  };
+
+  // Handlers for AI tools functionality
+  const handleTextToSpeech = () => {
+    message.info('Text-to-Speech feature coming soon');
+    // Implement feature functionality here
+  };
+
+  const handleQuizIt = () => {
+    message.info('Quiz-It feature coming soon');
+    // Implement feature functionality here
+  };
+
+  const handleSummarize = () => {
+    message.info('Summarize feature coming soon');
+    // Implement feature functionality here
   };
 
   return (
@@ -195,14 +225,21 @@ const MainLayout: React.FC = () => {
             <img src={Logo} alt="Logo" className="sidebar-logo" />
           </div>
           <div className="search-container">
-            <Input.Search
-              placeholder="Search notes..."
-              allowClear
-              value={searchQuery}
-              onChange={handleSearchChange}
-              onSearch={handleSearchSubmit}
-              enterButton={<SearchOutlined />}
-            />
+            <div className={`search-input-wrapper ${isSearchVisible ? 'visible' : ''}`}>
+              <Input
+                className="search-input"
+                placeholder="Search notes..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyPress={handleSearchSubmit}
+                onBlur={() => {
+                  if (searchQuery.trim() === '') {
+                    setIsSearchVisible(false);
+                  }
+                }}
+              />
+            </div>
+            <SearchOutlined className="search-icon" onClick={toggleSearch} />
           </div>
         </div>
 
@@ -253,16 +290,25 @@ const MainLayout: React.FC = () => {
           {/* AI Tools Section - only visible on note editor pages */}
           {isNoteEditorPage && (
             <div className="ai-tools-section">
-              <div className="note-item ai-tool-item">
-                <MessageOutlined className="note-icon" />
+              <div 
+                className="note-item ai-tool-item"
+                onClick={handleTextToSpeech}
+              >
+                <SoundOutlined className="note-icon" />
                 <span>Text-To-Speech</span>
               </div>
-              <div className="note-item ai-tool-item">
-                <SoundOutlined className="note-icon" />
+              <div 
+                className="note-item ai-tool-item"
+                onClick={handleQuizIt}
+              >
+                <SignatureOutlined className="note-icon" />
                 <span>Quiz-It</span>
               </div>
-              <div className="note-item ai-tool-item">
-                <FileTextOutlined className="note-icon" />
+              <div 
+                className="note-item ai-tool-item"
+                onClick={handleSummarize}
+              >
+                <SolutionOutlined className="note-icon" />
                 <span>Summarize</span>
               </div>
             </div>
