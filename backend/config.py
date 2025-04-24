@@ -4,6 +4,7 @@ from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 import redis
 import os
+import gridfs
 
 load_dotenv()
 
@@ -21,6 +22,7 @@ uri = MONGO_URI
 print("MONGO_URI:", MONGO_URI)
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
+
 # Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')
@@ -29,8 +31,10 @@ except Exception as e:
     print(e)
 
 db = client["note_taking_db"] 
+media_fs = gridfs.GridFS(db)        # GridFS bucket named "fs" by default
 notes_collection = db["notes"]
 users_collection = db["users"]
+media_collection = db["media"]
 
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
 

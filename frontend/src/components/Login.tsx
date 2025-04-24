@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import { Button, Checkbox, Form, Input,message } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, Flex, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import LogoImage from "./assets/Frame.svg"; 

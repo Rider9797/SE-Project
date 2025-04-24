@@ -1,8 +1,13 @@
 from config import notes_collection
 from datetime import datetime, timezone
 from bson.objectid import ObjectId
-
-
+from io import BytesIO
+import xhtml2pdf
+from flask import send_file, jsonify
+from flask import make_response
+from xhtml2pdf import pisa
+from xhtml2pdf import pisa
+from io import BytesIO
 
 
 def create_note(user_id, title, content, ai_tag=None):
@@ -42,16 +47,6 @@ def delete_note(note_id):
         {"$set": {"deleted_at": datetime.now(timezone.utc)}}
     )
 
-
-from io import BytesIO
-import xhtml2pdf
-from flask import send_file, jsonify
-from flask import make_response
-
-from xhtml2pdf import pisa
-
-from xhtml2pdf import pisa
-from io import BytesIO
 
 def get_pdf_note(note_id):
     print(f"Fetching note with ID: {note_id}")  # Debug print statement

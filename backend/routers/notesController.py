@@ -22,7 +22,7 @@ def get_user_notes():  # Renamed from get_notes to avoid conflict
 
 @notes_routes.route("/notes/<note_id>", methods=["GET"])
 @jwt_required()
-def get_single_note(note_id):  # New endpoint to get single note
+def get_single_note(note_id):  
 
     print("note_id: ",note_id)
 
