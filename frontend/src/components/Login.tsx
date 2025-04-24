@@ -1,9 +1,15 @@
-import React, {useState} from 'react';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Flex, message } from 'antd';
+import React, { useState } from 'react';
+import { LockOutlined, MailOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import LogoImage from "./assets/Frame.svg"; 
+=======
+import { setAuthToken } from '../utils/authorisation';
+import LogoImage from './assets/Frame.svg';
+import GoogleIcon from './assets/GoogleIcon.svg'; // Google icon SVG (unused right now)
+>>>>>>> 1a57a20c7e96e191a5989bc28a466b1c9ac3ecbe
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -12,7 +18,7 @@ const Login: React.FC = () => {
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const response = await axios.post('http://127.0.0.1:5000/auth/login', values, {
-        withCredentials: true
+        withCredentials: true,
       });
 
       localStorage.setItem('token', response.data.access_token);
@@ -44,32 +50,30 @@ const Login: React.FC = () => {
         onFinish={onFinish}
         validateTrigger="onSubmit"
       >
+        {/* E-mail field */}
         <Form.Item
           name="email"
           rules={[
-            { 
-              required: true,
-              message: "Please input your Email!" 
-            },
-            {
-              type: 'email',
-              message: 'Invalid email format!',
-            },
+            { required: true, message: 'Please input your Email!' },
+            { type: 'email', message: 'Invalid email format!' },
           ]}
           style={{ marginBottom: 34 }}
         >
           <Input
+            prefix={<MailOutlined />}
             placeholder="email@domain.com"
             className="custom-input"
           />
         </Form.Item>
 
+        {/* Password field */}
         <Form.Item
           name="password"
-          rules={[{ required: true, message: "Please input your Password!" }]}
+          rules={[{ required: true, message: 'Please input your Password!' }]}
           style={{ marginBottom: 34 }}
         >
           <Input.Password
+            prefix={<LockOutlined />}
             placeholder="password"
             className="custom-input"
           />
@@ -84,21 +88,15 @@ const Login: React.FC = () => {
         </div>
 
         {loginError && (
-          <div className="error-message" style={{ 
-            color: 'red', 
-            textAlign: 'center',
-            marginBottom: '16px'
-          }}>
+          <div
+            className="error-message"
+            style={{ color: 'red', textAlign: 'center', marginBottom: 16 }}
+          >
             {loginError}
           </div>
         )}
 
-        <Button
-          block
-          type="primary"
-          htmlType="submit"
-          className="login-btn"
-        >
+        <Button block type="primary" htmlType="submit" className="login-btn">
           Log in
         </Button>
 
@@ -108,24 +106,24 @@ const Login: React.FC = () => {
           <div className="divider" />
         </div>
 
-        <Button
-          block
-          className="create-account-btn"
-          onClick={() => navigate("/signup")}
-        >
+        <Button block className="create-account-btn" onClick={() => navigate('/signup')}>
           Create an Account
         </Button>
 
-        {/* <div className="divider-with-text">
-          <div className="divider" />
-          <span className="divider-text">or continue with</span>
-          <div className="divider" />
-        </div>
-
-        <Button className="google-btn">
-          <img src={GoogleIcon} alt="Google icon" className="google-icon" /> {/* Add className }
-          <span>Google</span>
-        </Button> */}
+        {/* Optional: social login (currently disabled) */}
+        {false && (
+          <>
+            <div className="divider-with-text">
+              <div className="divider" />
+              <span className="divider-text">or continue with</span>
+              <div className="divider" />
+            </div>
+            <Button className="google-btn">
+              <img src={GoogleIcon} alt="Google icon" className="google-icon" />
+              <span>Google</span>
+            </Button>
+          </>
+        )}
       </Form>
 
       <div className="footer-text">
