@@ -1,6 +1,10 @@
 /* styles/MainLayout.css */
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap');
-
+html, body { background: #181818; }
+/* prevent white behind the rounded inside edge */.side-drawer .ant-drawer-content-wrapper,
+.side-drawer .ant-drawer-wrapper-body {
+  background:#181818 !important;
+}
 /* Main Layout */
 .main-layout {
   display: flex;
@@ -481,4 +485,134 @@
 /* Handle collapsed sidebar state */
 .sidebar.collapsed .search-input-wrapper.visible {
   display: none;
+<<<<<<< Updated upstream
 }
+=======
+}
+
+/* Modal styles for dark theme */
+.ant-modal-content {
+  background-color: #181818 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ant-modal-header {
+  background-color: #181818 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px 16px 0 0 !important; 
+}
+
+.ant-modal-title {
+  color: #FFFFFF !important;
+  font-family: 'Source Sans Pro', sans-serif !important;
+}
+
+.ant-modal-close {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.ant-modal-close:hover {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-modal-body {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: #181818 !important;
+  border-radius: 0 0 16px 16px !important;
+}
+
+/* Form input styles for dark theme */
+.ant-input {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+}
+
+.ant-input:focus, 
+.ant-input-focused {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+}
+
+.ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Button styles for dark theme modals */
+.ant-modal-footer .ant-btn {
+  border-radius: 6px !important;
+}
+
+.ant-modal-footer .ant-btn-default {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-modal-footer .ant-btn-default:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.ant-modal-footer .ant-btn-primary {
+  background-color: #1890ff !important;
+  border-color: #1890ff !important;
+}
+
+/* Specific styles for the confirm logout modal */
+.ant-modal-confirm-body {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-modal-confirm-title {
+  color: #FFFFFF !important;
+  font-family: 'Source Sans Pro', sans-serif !important;
+}
+
+.ant-modal-confirm-content {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* Modal form label colors */
+.ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+/* ───── Slide-and-bounce for right drawer ───── */
+@keyframes drawerBounce {
+  0%   { transform: translateX(100%); }
+  80%  { transform: translateX(-8%);  }  /* overshoot left   */
+  92%  { transform: translateX(4%);   }  /* whip back right  */
+  100% { transform: translateX(0);    }
+}
+
+/* apply the animation once the drawer’s “open” class appears */
+.side-drawer.ant-drawer-open .ant-drawer-content-wrapper {
+  animation: drawerBounce 0.55s
+             cubic-bezier(0.25, 1.5, 0.5, 1)   /* springy curve  */
+             forwards !important;               /* beat inline    */
+}
+
+/* dark styling + rounded inside edge (unchanged) */
+.side-drawer .ant-drawer-content,
+.side-drawer .ant-drawer-header,
+.side-drawer .ant-drawer-body {
+  background: #181818 !important;
+  color: #ffffff !important;
+}
+.side-drawer .ant-drawer-content { border-radius: 20px 0 0 20px; }
+
+/* centre + enlarge header text */
+.side-drawer .ant-drawer-header { display: flex; }
+.side-drawer .ant-drawer-title  {
+  flex: 1;
+  text-align: center;
+  font-size: 28px;   /* bigger title */
+  font-weight: 600;
+}
+.side-drawer .ant-drawer-close  { color: #ffffff !important; }
+>>>>>>> Stashed changes
