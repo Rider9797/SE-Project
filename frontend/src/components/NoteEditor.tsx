@@ -1,118 +1,121 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Input, Button, Dropdown, Menu, message } from 'antd';
-import { 
-  BoldOutlined, 
-  ItalicOutlined, 
-  UnderlineOutlined,
+import {
   CalendarOutlined,
   TagOutlined,
   MoreOutlined,
   FilePdfOutlined,
   SaveOutlined,
-  DeleteOutlined
+  DeleteOutlined,
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { authedApi } from './api';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
+/* ---------- custom dark toolbar ---------- */
+const QuillToolbar: React.FC = () => (
+  <div id="note-toolbar" className="custom-quill-toolbar">
+    <select className="ql-header" defaultValue="">
+      <option value="">Normal</option>
+      <option value="1">Heading 1</option>
+      <option value="2">Heading 2</option>
+      <option value="3">Heading 3</option>
+    </select>
+
+    <button className="ql-bold" />
+    <button className="ql-italic" />
+    <button className="ql-underline" />
+    <button className="ql-list" value="ordered" />
+    <button className="ql-list" value="bullet" />
+    <button className="ql-clean" />
+  </div>
+);
+
+/* ---------- Quill config ---------- */
+const quillModules = { toolbar: { container: '#note-toolbar' }, clipboard: { matchVisual: false } };
+const quillFormats = ['header', 'bold', 'italic', 'underline', 'list', 'bullet', 'clean'];
+
+/* ---------- local types ---------- */
+interface Note {
+  _id: string;
+  title: string;
+  content: string;
+  created_at: string;
+  tags?: string[];
+}
+
+/* ────────────────────────────────────────────────────────── */
 const NoteEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [note, setNote] = useState<{
-    _id: string;
-    title: string;
-    content: string;
-    created_at: string;
-  } | null>(null);
+
+  const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isSavingRef = useRef(false);
 
-  // Fetch note data
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isSaving = useRef(false);
+
+  /* ---------- fetch note ---------- */
   useEffect(() => {
+    if (!id) return;
     const fetchNote = async () => {
       try {
         setLoading(true);
-        const response = await authedApi.get(`/notes/${id}`);
-        setNote(response.data);
-      } catch (error) {
+        const { data } = await authedApi.get<Note>(`/notes/${id}`);
+        setNote(data);
+      } catch {
         message.error('Failed to load note');
         navigate('/Dashboard');
       } finally {
         setLoading(false);
       }
     };
-
-    if (id) {
-      fetchNote();
-    }
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
+    fetchNote();
   }, [id, navigate]);
 
-  // Auto-save function
-  const autoSaveNote = useCallback(async () => {
-    if (!note || isSavingRef.current) return;
-
-    isSavingRef.current = true;
+  /* ---------- auto-save helpers ---------- */
+  const persistNote = useCallback(async () => {
+    if (!note || isSaving.current) return;
+    isSaving.current = true;
     try {
-      await authedApi.put(`/notes/${id}`, {
-        title: note.title,
-        content: note.content
-      });
-    } catch (error) {
-      console.error('Auto-save failed:', error);
+      await authedApi.put(`/notes/${id}`, { title: note.title, content: note.content });
     } finally {
-      isSavingRef.current = false;
+      isSaving.current = false;
     }
   }, [id, note]);
 
-  // Debounced auto-save
-  const debouncedAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
+  const debounceSave = useCallback(() => {
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(persistNote, 1500);
+  }, [persistNote]);
 
-    saveTimeoutRef.current = setTimeout(() => {
-      autoSaveNote();
-    }, 2000);
-  }, [autoSaveNote]);
+  /* ---------- field handlers ---------- */
+  const handleTitleChange = (value: string) => {
+    if (!note) return;
+    setNote({ ...note, title: value });
+    debounceSave();
+  };
 
-  // Manual save function
+  const handleContentChange = (html: string) => {
+    if (!note) return;
+    setNote({ ...note, content: html });
+    debounceSave();
+  };
+
+  /* ---------- manual save / delete ---------- */
   const handleManualSave = async () => {
     if (!note) return;
-    
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
     try {
-      message.loading({ content: 'Saving...', key: 'saveNote' });
-      await authedApi.put(`/notes/${id}`, {
-        title: note.title,
-        content: note.content
-      });
+      message.loading({ content: 'Saving…', key: 'saveNote' });
+      await authedApi.put(`/notes/${id}`, { title: note.title, content: note.content });
       message.success({ content: 'Note saved!', key: 'saveNote' });
-    } catch (error) {
-      message.error({ content: 'Failed to save note', key: 'saveNote' });
+    } catch {
+      message.error({ content: 'Failed to save', key: 'saveNote' });
     }
-  };
-
-  const handleContentChange = (content: string) => {
-    if (!note) return;
-    setNote({ ...note, content });
-    debouncedAutoSave();
-  };
-
-  const handleTitleChange = (title: string) => {
-    if (!note) return;
-    setNote({ ...note, title });
-    debouncedAutoSave();
   };
 
   const handleDeleteNote = async () => {
@@ -120,142 +123,96 @@ const NoteEditor: React.FC = () => {
       await authedApi.delete(`/notes/${id}`);
       message.success('Note deleted');
       navigate('/Dashboard');
-    } catch (error) {
+    } catch {
       message.error('Failed to delete note');
     }
   };
 
-  const paragraphOptions = (
+  /* ---------- dropdown ---------- */
+  const moreMenu = (
     <Menu>
-      <Menu.Item key="p">Paragraph</Menu.Item>
-      <Menu.Item key="h1">Heading 1</Menu.Item>
-      <Menu.Item key="h2">Heading 2</Menu.Item>
-      <Menu.Item key="h3">Heading 3</Menu.Item>
-    </Menu>
-  );
-  
-  // More options menu
-  const moreOptions = (
-    <Menu>
-      <Menu.Item 
-        key="save" 
-        icon={<SaveOutlined />}
-        onClick={handleManualSave}
-      >
+      <Menu.Item key="save" icon={<SaveOutlined />} onClick={handleManualSave}>
         Save Note
       </Menu.Item>
-      <Menu.Item 
-        key="delete" 
-        icon={<DeleteOutlined />}
-        onClick={handleDeleteNote}
-        danger
-      >
+      <Menu.Item key="delete" icon={<DeleteOutlined />} danger onClick={handleDeleteNote}>
         Delete Note
       </Menu.Item>
-      <Menu.Item 
-        key="pdf" 
+      <Menu.Item
+        key="pdf"
         icon={<FilePdfOutlined />}
         disabled={isExporting}
         onClick={async () => {
+          if (!note) return;
           setIsExporting(true);
           try {
-            const response = await fetch(`http://localhost:5000/api/notes/${id}/pdf`, {
-              method: 'GET',
-              credentials: 'include',
-            });
-            
-            if (!response.ok) {
-              throw new Error('Failed to fetch PDF');
-            }
-        
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-        
+            const res = await fetch(`http://localhost:5000/api/notes/${id}/pdf`, { credentials: 'include' });
+            if (!res.ok) throw new Error();
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `note_${note?.title || 'untitled'}.pdf`;
-            document.body.appendChild(a);
+            a.download = `note_${note.title || 'untitled'}.pdf`;
             a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-            
-            message.success('PDF exported successfully!');
-          } catch (error) {
-            console.error('Error downloading PDF:', error);
-            message.error('Failed to export PDF');
+            URL.revokeObjectURL(url);
+          } catch {
+            message.error('PDF export failed');
           } finally {
             setIsExporting(false);
           }
         }}
       >
-        {isExporting ? 'Exporting...' : 'Export as PDF'}
+        {isExporting ? 'Exporting…' : 'Export as PDF'}
       </Menu.Item>
     </Menu>
   );
 
-  if (loading || !note) {
-    return <div>Loading...</div>;
-  }
+  /* ---------- render ---------- */
+  if (loading || !note) return <div className="note-loading">Loading…</div>;
+
+  const createdDate = new Date(note.created_at).toLocaleDateString();
+  const tagString = note.tags?.join(', ') || '—';
 
   return (
     <div className="note-editor-container">
+      {/* ───── HEADER ───── */}
       <div className="note-editor-header">
         <div className="title-and-more">
-          <Input 
-            className="note-title-input" 
-            value={note.title} 
+          <Input
+            className="note-title-input"
+            value={note.title}
             onChange={(e) => handleTitleChange(e.target.value)}
             bordered={false}
-            placeholder="Note Title"
+            placeholder="Untitled"
           />
-          <Dropdown overlay={moreOptions} trigger={['click']} placement="bottomRight">
+          <Dropdown overlay={moreMenu} trigger={['click']} placement="bottomRight">
             <Button icon={<MoreOutlined />} className="more-options-btn" />
           </Dropdown>
         </div>
-        
+
         <div className="meta-container">
           <div className="meta-item">
             <CalendarOutlined className="meta-icon" />
-            <div className="meta-label">Date</div>
-            <div className="meta-value">
-              {new Date(note.created_at).toLocaleDateString()}
-            </div>
+            <span className="meta-label">Date:&nbsp;</span>
+            <span className="meta-value">{createdDate}</span>
           </div>
-          
           <div className="meta-item">
             <TagOutlined className="meta-icon" />
-            <div className="meta-label">Tags</div>
-            <div className="meta-value">Personal</div>
+            <span className="meta-label">Tags:&nbsp;</span>
+            <span className="meta-value">{tagString}</span>
           </div>
         </div>
       </div>
 
-      <div className="note-toolbar">
-        <div className="toolbar-left">
-          <Dropdown overlay={paragraphOptions} trigger={['click']}>
-            <Button className="format-button">
-              Paragraph <span className="dropdown-arrow">▼</span>
-            </Button>
-          </Dropdown>
-          
-          <Button className="format-button">
-            16 <span className="dropdown-arrow">▼</span>
-          </Button>
-          
-          <div className="format-actions">
-            <Button className="icon-button"><BoldOutlined /></Button>
-            <Button className="icon-button"><ItalicOutlined /></Button>
-            <Button className="icon-button"><UnderlineOutlined /></Button>
-          </div>
-        </div>
-      </div>
-
+      {/* ───── EDITOR ───── */}
       <div className="note-content-area">
-        <textarea 
-          className="note-content" 
-          value={note.content} 
-          onChange={(e) => handleContentChange(e.target.value)}
-          placeholder="Start writing..."
+        <QuillToolbar />
+        <ReactQuill
+          theme="snow"
+          value={note.content}
+          onChange={handleContentChange}
+          modules={quillModules}
+          formats={quillFormats}
+          placeholder="Start writing…"
         />
       </div>
     </div>
