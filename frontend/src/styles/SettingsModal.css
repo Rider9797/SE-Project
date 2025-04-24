@@ -1,0 +1,122 @@
+/* ========== Settings Modal Overrides ========== */
+/* 
+   Apply rounded corners to every visible layer of the Ant‑Design modal ONLY 
+   when it has the custom class `settings-modal-root`.
+   We hit the outer wrapper, the modal box, header, body, and footer *and* hide
+   overflow so background doesn't peek through.
+*/
+.settings-modal-root .ant-modal,
+.settings-modal-root .ant-modal-content,
+.settings-modal-root .ant-modal-header,
+.settings-modal-root .ant-modal-body,
+.settings-modal-root .ant-modal-footer {
+  background: #181818;
+  border-radius: 24px !important;  /* ensure rounded */
+  overflow: hidden;               /* clip inner white corners */
+}
+
+/* Wrapper that splits the modal into left rail & right pane */
+.settings-wrapper {
+  display: flex;
+  min-height: 520px; /* matches Figma */
+}
+
+/* ---------- Left rail ---------- */
+.settings-rail {
+  position: relative;
+  display: flex;
+  width: 250px;
+  padding: 30px 0;
+  flex-direction: column;
+  gap: 31px;
+  background: #181818;
+  flex-shrink: 0;
+}
+
+.rail-btn {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding: 22px 30px; /* taller */
+  align-self: stretch; /* full width */
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.60);
+  font: 600 16px "Source Sans Pro";
+  transition: background 0.25s;
+}
+
+.rail-btn.active,
+.rail-btn:hover {
+  border-radius: 3px;
+  background: rgba(69, 69, 69, 0.42);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.rail-btn .anticon {
+  font-size: 20px;
+}
+
+.rail-footer {
+  position: absolute;
+  left: 85px;
+  bottom: 26.142px;
+  font: 600 10px "Source Sans Pro";
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ---------- Right‑hand pane ---------- */
+.settings-pane {
+  flex: 1 0 0;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 37px;
+  background: #181818;
+  overflow-y: auto;
+}
+
+/* Typography */
+.section-heading {
+  margin: 0;
+  color: #ffffff;
+  font: 600 28px "Source Sans Pro";
+}
+
+.sub-heading {
+  margin: 0;
+  color: #ffffff;
+  font: 600 18px "Source Sans Pro";
+}
+
+.pair {
+  margin: 0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.label {
+  width: 120px;
+  color: rgba(255, 255, 255, 0.60);
+  font: 600 14px "Source Sans Pro";
+}
+
+.value {
+  color: #ffffff;
+  font: 400 14px "Source Sans Pro";
+}
+
+.edit-link {
+  padding: 0;
+  height: auto;
+  line-height: 1;
+  font: 600 14px "Source Sans Pro";
+}
+
+.logout-btn {
+  padding: 12px 32px;
+  border-radius: 12px;
+  font: 600 16px "Source Sans Pro";
+  align-self: flex-start; /* left-align inside pane */
+  margin-top: 8px;
+}

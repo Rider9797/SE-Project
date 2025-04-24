@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Button, Form, Modal, Input, message } from 'antd';
-import { 
-  SearchOutlined, 
-  PlusOutlined, 
-  DeleteOutlined, 
-  SettingOutlined, 
+import { Button, Form, Modal, Drawer, Input, message } from 'antd';
+import {
+  SearchOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  SettingOutlined,
   FileOutlined,
-  SignatureOutlined, // Added for Text-To-Speech
-  SoundOutlined,  // Added for Quiz-It
-  SolutionOutlined // Added for Summarize
+  SignatureOutlined, // Quiz-It
+  SoundOutlined,     // Text-To-Speech
+  SolutionOutlined,  // Summarize
 } from '@ant-design/icons';
 import '../styles/MainLayout.css';
 import Logo from './assets/Frame.svg';
-import axios from 'axios';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { authedApi, searchApi } from './api';
+import SettingsModal from './SettingsModal';
 
+/* ───────────────────────── types ───────────────────────── */
 interface Note {
   _id: string;
   title: string;
@@ -25,35 +26,43 @@ interface Note {
 }
 
 const MainLayout: React.FC = () => {
+  /* ──────────────── UI state ──────────────── */
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+
+  // NEW drawers
+  const [isQuizVisible, setQuizVisible] = useState(false);
+  const [isSummaryVisible, setSummaryVisible] = useState(false);
+
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token] = useState<string | null>(localStorage.getItem('token'));
+
   const navigate = useNavigate();
   const location = useLocation();
+  const isNoteEditorPage =
+    location.pathname.includes('/Dashboard/') && location.pathname.includes('/edit');
 
-  // Check if we're on the note editor page
-  const isNoteEditorPage = location.pathname.includes('/Dashboard/') && location.pathname.includes('/edit');
-
-  // Configure axios interceptor
+  /* ─────────────── axios guard ─────────────── */
   authedApi.interceptors.response.use(
-    response => response,
-    error => {
-      if (error.response?.status === 401) {
+    (r) => r,
+    (err) => {
+      if (err.response?.status === 401) {
         localStorage.removeItem('token');
         message.warning('Session expired. Please log in again.');
         navigate('/');
       }
-      return Promise.reject(error);
-    }
+      return Promise.reject(err);
+    },
   );
 
+  /* ─────────────── lifecycle ──────────────── */
   useEffect(() => {
     if (token) {
       authedApi.defaults.headers['Authorization'] = `Bearer ${token}`;
@@ -61,127 +70,98 @@ const MainLayout: React.FC = () => {
     } else {
       navigate('/');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
+  /* ────────────── helpers ────────────── */
   const fetchNotes = async () => {
     try {
-      const response = await authedApi.get('/notes');
-      setNotes(response.data);
-      setFilteredNotes(response.data);
-    } catch (error: unknown) {
-      handleApiError(error);
+      const { data } = await authedApi.get('/notes');
+      setNotes(data);
+      setFilteredNotes(data);
+    } catch (e) {
+      handleApiError(e);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreate = async (values: { title: string }) => {
+  const handleApiError = (error: unknown, custom?: string) => {
+    if (error instanceof AxiosError && error.response) {
+      const { status } = error.response;
+      if (status === 401) {
+        localStorage.removeItem('token');
+        navigate('/');
+      } else message.error(custom || 'An error occurred');
+    } else message.error('An unknown error occurred');
+    console.error(error);
+  };
+
+  /* ────────── create + logout ────────── */
+  const handleCreate = async (v: { title: string }) => {
     try {
-      const response = await authedApi.post('/notes/create', {
-        title: values.title,
-        content: ''
+      const { data } = await authedApi.post('/notes/create', {
+        title: v.title,
+        content: '',
       });
-      navigate(`/Dashboard/${response.data.note_id}/edit`);
+      navigate(`/Dashboard/${data.note_id}/edit`);
       setIsModalVisible(false);
       form.resetFields();
       message.success('Note created successfully!');
-    } catch (error: unknown) {
-      handleApiError(error, 'Failed to create note');
+    } catch (e) {
+      handleApiError(e, 'Failed to create note');
     }
   };
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://127.0.0.1:5000/auth/logout', {}, {
-        withCredentials: true
-      });
+      await axios.post('http://127.0.0.1:5000/auth/logout', {}, { withCredentials: true });
       localStorage.removeItem('token');
       navigate('/');
-    } catch (error) {
+    } catch (e) {
       message.error('Logout failed');
-      console.error('Logout error:', error);
+      console.error(e);
     }
   };
 
+  /* ───────────── search box ───────────── */
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-  
-    if (query.length < 3) {
-      const filtered = notes.filter(note =>
-        note.title.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredNotes(filtered);
-    }
+    const q = e.target.value;
+    setSearchQuery(q);
+    if (q.length < 3)
+      setFilteredNotes(notes.filter((n) => n.title.toLowerCase().includes(q.toLowerCase())));
   };
-  
+
   const handleSearchSubmit = async (e?: React.KeyboardEvent<HTMLInputElement>) => {
     if (e && e.key !== 'Enter') return;
-    
-    const value = searchQuery.trim();
-    if (value.length >= 3) {
-      try {
-        const response = await searchApi.get(`/search?q=${encodeURIComponent(value)}`);
-        setFilteredNotes(response.data.notes);
-      } catch (error) {
-        message.warning('Search failed, using local results');
-        const fallback = notes.filter(note =>
-          note.title.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredNotes(fallback);
-      }
+    const q = searchQuery.trim();
+    if (q.length < 3) return;
+    try {
+      const { data } = await searchApi.get(`/search?q=${encodeURIComponent(q)}`);
+      setFilteredNotes(data.notes);
+    } catch {
+      message.warning('Search failed, showing local matches');
+      setFilteredNotes(notes.filter((n) => n.title.toLowerCase().includes(q.toLowerCase())));
     }
   };
 
   const toggleSearch = () => {
-    setIsSearchVisible(!isSearchVisible);
-    if (!isSearchVisible) {
-      // Focus the input when search becomes visible
+    setIsSearchVisible((v) => !v);
+    if (!isSearchVisible)
       setTimeout(() => {
-        const searchInput = document.querySelector('.search-input input') as HTMLInputElement;
-        if (searchInput) searchInput.focus();
+        (document.querySelector('.search-input input') as HTMLInputElement)?.focus();
       }, 300);
-    }
   };
 
-  const handleApiError = (error: unknown, customMessage?: string) => {
-    if (error instanceof AxiosError && error.response) {
-      switch (error.response.status) {
-        case 401:
-          localStorage.removeItem('token');
-          navigate('/');
-          break;
-        case 422:
-          message.error('Invalid data provided');
-          break;
-        default:
-          message.error(customMessage || 'An error occurred');
-      }
-    } else {
-      message.error('An unknown error occurred');
-    }
-    console.error(error);
-  };
+  /* ───────────── AI tools ───────────── */
+  const handleTextToSpeech = () => message.info('Text-to-Speech feature coming soon');
+  const handleQuizIt = () => setQuizVisible(true);
+  const handleSummarize = () => setSummaryVisible(true);
 
-  // Handlers for AI tools functionality
-  const handleTextToSpeech = () => {
-    message.info('Text-to-Speech feature coming soon');
-    // Implement feature functionality here
-  };
-
-  const handleQuizIt = () => {
-    message.info('Quiz-It feature coming soon');
-    // Implement feature functionality here
-  };
-
-  const handleSummarize = () => {
-    message.info('Summarize feature coming soon');
-    // Implement feature functionality here
-  };
-
+  /* ─────────────── render ─────────────── */
   return (
     <div className="main-layout">
-      {/* Logout Confirmation Modal */}
+      {/* ─── logout confirm ─── */}
       <Modal
         title="Confirm Logout"
         open={isLogoutModalVisible}
@@ -193,7 +173,7 @@ const MainLayout: React.FC = () => {
         <p>Are you sure you want to log out?</p>
       </Modal>
 
-      {/* New Note Modal */}
+      {/* ─── create note ─── */}
       <Modal
         title="Create New Note"
         open={isModalVisible}
@@ -201,10 +181,7 @@ const MainLayout: React.FC = () => {
         footer={null}
       >
         <Form form={form} onFinish={handleCreate}>
-          <Form.Item
-            name="title"
-            rules={[{ required: true, message: 'Please enter a title' }]}
-          >
+          <Form.Item name="title" rules={[{ required: true, message: 'Please enter a title' }]}>
             <Input placeholder="Title" autoFocus />
           </Form.Item>
           <Form.Item>
@@ -215,13 +192,11 @@ const MainLayout: React.FC = () => {
         </Form>
       </Modal>
 
+      {/* ─── sidebar ─── */}
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        {/* header */}
         <div className="sidebar-header">
-          <div 
-            className="logo"
-            onClick={() => navigate('/dashboard')}
-            style={{ cursor: 'pointer' }}
-          >
+          <div className="logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
             <img src={Logo} alt="Logo" className="sidebar-logo" />
           </div>
           <div className="search-container">
@@ -233,9 +208,7 @@ const MainLayout: React.FC = () => {
                 onChange={handleSearchChange}
                 onKeyPress={handleSearchSubmit}
                 onBlur={() => {
-                  if (searchQuery.trim() === '') {
-                    setIsSearchVisible(false);
-                  }
+                  if (searchQuery.trim() === '') setIsSearchVisible(false);
                 }}
               />
             </div>
@@ -243,6 +216,7 @@ const MainLayout: React.FC = () => {
           </div>
         </div>
 
+        {/* new note */}
         <div className="new-note-container">
           <Button
             className="new-note-btn"
@@ -253,81 +227,107 @@ const MainLayout: React.FC = () => {
           </Button>
         </div>
 
+        {/* notes list */}
         <div className="notes-section">
           <div className="all-notes-header">All Notes</div>
-          
           {loading ? (
             <div className="loading-notes">Loading...</div>
           ) : (
-            (searchQuery ? filteredNotes : notes).map((note) => (
-              <div 
-                key={note._id} 
-                className={`note-item ${location.pathname.includes(note._id) ? 'active' : ''}`}
-                onClick={() => navigate(`/Dashboard/${note._id}/edit`)}
+            (searchQuery ? filteredNotes : notes).map((n) => (
+              <div
+                key={n._id}
+                className={`note-item ${location.pathname.includes(n._id) ? 'active' : ''}`}
+                onClick={() => navigate(`/Dashboard/${n._id}/edit`)}
               >
                 <FileOutlined className="note-icon" />
-                <span>{note.title}</span>
+                <span>{n.title}</span>
               </div>
             ))
           )}
 
+          {/* footer */}
           <div className="more-section">More</div>
-          
           <div className="note-list-footer">
             <div className="note-item">
               <DeleteOutlined className="note-icon" />
               <span>Trash</span>
             </div>
-            <div 
-              className="note-item"
-              onClick={() => setIsLogoutModalVisible(true)}
-            >
+            <div className="note-item" onClick={() => setIsSettingsVisible(true)}>
               <SettingOutlined className="note-icon" />
               <span>Settings</span>
             </div>
           </div>
 
-          {/* AI Tools Section - only visible on note editor pages */}
+          {/* AI tools (editor only) */}
           {isNoteEditorPage && (
             <div className="ai-tools-section">
-              <div 
-                className="note-item ai-tool-item"
-                onClick={handleTextToSpeech}
-              >
+              <div className="note-item ai-tool-item" onClick={handleTextToSpeech}>
                 <SoundOutlined className="note-icon" />
                 <span>Text-To-Speech</span>
               </div>
-              <div 
-                className="note-item ai-tool-item"
-                onClick={handleQuizIt}
-              >
+              <div className="note-item ai-tool-item" onClick={handleQuizIt}>
                 <SignatureOutlined className="note-icon" />
                 <span>Quiz-It</span>
               </div>
-              <div 
-                className="note-item ai-tool-item"
-                onClick={handleSummarize}
-              >
+              <div className="note-item ai-tool-item" onClick={handleSummarize}>
                 <SolutionOutlined className="note-icon" />
                 <span>Summarize</span>
               </div>
             </div>
           )}
 
-          <div 
-            className="collapse-sidebar" 
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d={sidebarCollapsed ? "M9 18L15 12L9 6" : "M15 18L9 12L15 6"} stroke="#4F4F4F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          {/* collapse */}
+          <div className="collapse-sidebar" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d={sidebarCollapsed ? 'M9 18L15 12L9 6' : 'M15 18L9 12L15 6'}
+                stroke="#4F4F4F"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
         </div>
       </div>
-      
+
+      {/* main content */}
       <div className="main-content">
         <Outlet />
       </div>
+
+      {/* settings */}
+      <SettingsModal
+        open={isSettingsVisible}
+        onClose={() => setIsSettingsVisible(false)}
+        onLogout={handleLogout}
+      />
+
+      {/* ─── Quiz-It drawer ─── */}
+      <Drawer
+        className="side-drawer"
+        title="Quiz-It"
+        placement="right"
+        width="35vw"
+        open={isQuizVisible}
+        onClose={() => setQuizVisible(false)}
+        destroyOnClose
+      >
+        {/* TODO: Quiz-It UI */}
+      </Drawer>
+
+      {/* ─── Summarize drawer ─── */}
+      <Drawer
+        className="side-drawer"
+        title="Summarize"
+        placement="right"
+        width="35vw"
+        open={isSummaryVisible}
+        onClose={() => setSummaryVisible(false)}
+        destroyOnClose
+      >
+        {/* TODO: Summarize UI */}
+      </Drawer>
     </div>
   );
 };
