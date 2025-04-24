@@ -1,107 +1,166 @@
-// components/SettingsModal.tsx
-import React, { useState, FC } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  SettingOutlined,
-  UserOutlined,
-  InfoCircleOutlined,
-  QuestionCircleOutlined,
-  LogoutOutlined,
+  SettingOutlined, UserOutlined, InfoCircleOutlined,
+  QuestionCircleOutlined, LogoutOutlined
 } from '@ant-design/icons';
-import { Button, Modal } from 'antd';
-import "../styles/SettingsModal.css";
+import { Button, Modal, Switch, Divider, Input, Form, message, Spin } from 'antd';
+import { useTheme } from '../contexts/ThemeContext';
+import { useFeatures } from '../contexts/FeatureFlags';
+import { authApi } from './api';                   // ← uses new instance
+import '../styles/SettingsModal.css';
 
 type Tab = 'settings' | 'profile' | 'about' | 'help';
+interface Props { open: boolean; onClose: () => void; onLogout: () => void; }
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-  onLogout: () => void;           // ← new
-}
+const SettingsModal: React.FC<Props> = ({ open, onClose, onLogout }) => {
+  const [tab, setTab] = useState<Tab>('settings');
+  const { theme, toggleTheme } = useTheme();
+  const { aiTools, toggleAi } = useFeatures();
 
-const SettingsModal: FC<Props> = ({ open, onClose, onLogout }) => {
-  const [tab, setTab] = useState<Tab>('profile');
+  /* -------- Profile state -------- */
+  const [profile, setProfile] = useState<{ username: string; email: string }>();
+  const [loadingProf, setLoadingProf] = useState(false);
+
+  useEffect(() => {
+    if (open && tab === 'profile') {
+      setLoadingProf(true);
+      authApi
+        .get('/profile')
+        .then(({ data }) => setProfile(data))
+        .catch(() => message.error('Failed to load profile'))
+        .finally(() => setLoadingProf(false));
+    }
+  }, [open, tab]);
+
+  /* ---------- Password change ---------- */
+  const changePassword = async (vals: { current: string; next: string }) => {
+    try {
+      await authApi.post('/change-password', vals);
+      message.success('Password updated');
+    } catch {
+      message.error('Current password incorrect');
+    }
+  };
 
   const renderBody = () => {
     switch (tab) {
-      /* ---------- SETTINGS TAB ---------- */
       case 'settings':
         return (
           <>
             <h2 className="section-heading">General Settings</h2>
 
-            {/* nice fat rounded-corner logout button */}
-            <Button
-              type="primary"
-              danger
-              icon={<LogoutOutlined />}
-              className="logout-btn"
-              onClick={onLogout}
-            >
+            <div className="pair">
+              <span className="label">Dark Mode</span>
+              <Switch checked={theme === 'dark'} onChange={toggleTheme} />
+            </div>
+
+            <div className="pair">
+              <span className="label">AI Features</span>
+              <Switch checked={aiTools} onChange={toggleAi} />
+            </div>
+
+            <Divider />
+
+            <Button danger type="primary" icon={<LogoutOutlined />} className="logout-btn" onClick={onLogout}>
               Log Out
             </Button>
           </>
         );
 
-      /* ---------- PROFILE TAB ---------- */
       case 'profile':
+        if (loadingProf) return <Spin />;
         return (
           <>
-            <h2 className="section-heading">User Name</h2>
-            <h3 className="sub-heading">Account Security</h3>
+            <h2 className="section-heading">Profile</h2>
 
+            <p className="pair">
+              <span className="label">Username</span>
+              <span className="value">{profile?.username || '—'}</span>
+            </p>
             <p className="pair">
               <span className="label">Email</span>
-              <span className="value">useremail@gmail.com</span>
+              <span className="value">{profile?.email || '—'}</span>
             </p>
 
-            <p className="pair">
-              <span className="label">Password</span>
-              <Button type="link" className="edit-link">
-                Edit&nbsp;Password
-              </Button>
+            <Divider />
+
+            <Form onFinish={changePassword} layout="vertical">
+              <Form.Item
+                name="current"
+                label="Current password"
+                rules={[{ required: true, message: 'Required' }]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item
+                name="next"
+                label="New password"
+                rules={[{ required: true, message: 'Required' }]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Update Password
+                </Button>
+              </Form.Item>
+            </Form>
+          </>
+        );
+
+      case 'help':
+        return (
+          <>
+            <h2 className="section-heading">Need a hand?</h2>
+            <p style={{ color: 'var(--fg-muted)' }}>
+              • Click <strong>New Note</strong> to start writing.<br />
+              • Auto-save after 1½ s of pause or&nbsp;<kbd>Ctrl&nbsp;+&nbsp;S</kbd>.<br />
+              • Three-dot menu in the editor = save / delete / PDF export.<br />
+              • Tap the magnifier to search notes.<br />
+              • Still stuck? See contact info in “About Us”.
             </p>
           </>
         );
 
       case 'about':
-        return <h2 className="section-heading">About Us</h2>;
-      case 'help':
-        return <h2 className="section-heading">Help &amp; Support</h2>;
+        return (
+          <>
+            <h2 className="section-heading">Contact Us</h2>
+            <Divider />
+            <p className="pair">
+              <span className="label">Email</span>
+              <span className="value">jakeminhas91@gmail.com</span>
+            </p>
+            <p className="pair">
+              <span className="label">Phone</span>
+              <span className="value">030&nbsp;8082&nbsp;2227</span>
+            </p>
+          </>
+        );
     }
   };
 
   return (
-    <Modal
-      width={920}
-      open={open}
-      onCancel={onClose}
-      footer={null}
-      closable
-      className="settings-modal-root"
-      destroyOnClose
-    >
+    <Modal width={920} open={open} onCancel={onClose} footer={null} className="settings-modal-root" destroyOnClose>
       <div className="settings-wrapper">
-        {/* ───── Left rail ───── */}
+        {/* -------- Left rail -------- */}
         <aside className="settings-rail">
           {[
-            { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
-            { key: 'profile',  icon: <UserOutlined />,   label: 'Profile' },
-            { key: 'about',    icon: <InfoCircleOutlined />, label: 'About Us' },
-            { key: 'help',     icon: <QuestionCircleOutlined />, label: 'Help' },
-          ].map(({ key, icon, label }) => (
-            <div
-              key={key}
-              className={`rail-btn ${tab === key ? 'active' : ''}`}
-              onClick={() => setTab(key as Tab)}
-            >
-              {icon} <span>{label}</span>
+            { k: 'settings', icon: <SettingOutlined />, label: 'Settings' },
+            { k: 'profile', icon: <UserOutlined />, label: 'Profile' },
+            { k: 'about', icon: <InfoCircleOutlined />, label: 'About Us' },
+            { k: 'help', icon: <QuestionCircleOutlined />, label: 'Help' }
+          ].map(({ k, icon, label }) => (
+            <div key={k} className={`rail-btn ${tab === k ? 'active' : ''}`} onClick={() => setTab(k as Tab)}>
+              {icon}
+              <span>{label}</span>
             </div>
           ))}
 
           <div className="rail-footer">© 2025 Note Genius</div>
         </aside>
 
-        {/* ───── Right pane ───── */}
+        {/* -------- Right-hand pane -------- */}
         <section className="settings-pane">{renderBody()}</section>
       </div>
     </Modal>

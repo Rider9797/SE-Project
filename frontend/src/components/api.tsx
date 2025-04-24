@@ -48,3 +48,9 @@ export const fetchNotes = async (token: string | null) => {
         return []; // Return an empty array in case of error
     }
 };
+export const authApi = axios.create({
+    baseURL: 'http://127.0.0.1:5000/auth',
+    withCredentials: true,
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+  

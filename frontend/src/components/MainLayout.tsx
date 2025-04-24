@@ -7,17 +7,17 @@ import {
   DeleteOutlined,
   SettingOutlined,
   FileOutlined,
-  SignatureOutlined, // Quiz-It
-  SoundOutlined,     // Text-To-Speech
-  SolutionOutlined,  // Summarize
+  SignatureOutlined,
+  SoundOutlined,
+  SolutionOutlined
 } from '@ant-design/icons';
+import { useFeatures } from '../contexts/FeatureFlags';
 import '../styles/MainLayout.css';
 import Logo from './assets/Frame.svg';
 import axios, { AxiosError } from 'axios';
 import { authedApi, searchApi } from './api';
 import SettingsModal from './SettingsModal';
 
-/* ───────────────────────── types ───────────────────────── */
 interface Note {
   _id: string;
   title: string;
@@ -26,16 +26,12 @@ interface Note {
 }
 
 const MainLayout: React.FC = () => {
-  /* ──────────────── UI state ──────────────── */
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
-
-  // NEW drawers
   const [isQuizVisible, setQuizVisible] = useState(false);
   const [isSummaryVisible, setSummaryVisible] = useState(false);
-
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -43,13 +39,19 @@ const MainLayout: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [token] = useState<string | null>(localStorage.getItem('token'));
+  const { aiTools } = useFeatures();
 
   const navigate = useNavigate();
   const location = useLocation();
   const isNoteEditorPage =
     location.pathname.includes('/Dashboard/') && location.pathname.includes('/edit');
 
-  /* ─────────────── axios guard ─────────────── */
+  useEffect(() => {
+    if (isNoteEditorPage || !aiTools) {
+      setSidebarCollapsed(true);
+    }
+  }, [isNoteEditorPage, aiTools]);
+
   authedApi.interceptors.response.use(
     (r) => r,
     (err) => {
@@ -62,7 +64,6 @@ const MainLayout: React.FC = () => {
     },
   );
 
-  /* ─────────────── lifecycle ──────────────── */
   useEffect(() => {
     if (token) {
       authedApi.defaults.headers['Authorization'] = `Bearer ${token}`;
@@ -70,10 +71,8 @@ const MainLayout: React.FC = () => {
     } else {
       navigate('/');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  /* ────────────── helpers ────────────── */
   const fetchNotes = async () => {
     try {
       const { data } = await authedApi.get('/notes');
@@ -97,7 +96,6 @@ const MainLayout: React.FC = () => {
     console.error(error);
   };
 
-  /* ────────── create + logout ────────── */
   const handleCreate = async (v: { title: string }) => {
     try {
       const { data } = await authedApi.post('/notes/create', {
@@ -124,7 +122,6 @@ const MainLayout: React.FC = () => {
     }
   };
 
-  /* ───────────── search box ───────────── */
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value;
     setSearchQuery(q);
@@ -153,15 +150,12 @@ const MainLayout: React.FC = () => {
       }, 300);
   };
 
-  /* ───────────── AI tools ───────────── */
   const handleTextToSpeech = () => message.info('Text-to-Speech feature coming soon');
   const handleQuizIt = () => setQuizVisible(true);
   const handleSummarize = () => setSummaryVisible(true);
 
-  /* ─────────────── render ─────────────── */
   return (
     <div className="main-layout">
-      {/* ─── logout confirm ─── */}
       <Modal
         title="Confirm Logout"
         open={isLogoutModalVisible}
@@ -173,7 +167,6 @@ const MainLayout: React.FC = () => {
         <p>Are you sure you want to log out?</p>
       </Modal>
 
-      {/* ─── create note ─── */}
       <Modal
         title="Create New Note"
         open={isModalVisible}
@@ -185,16 +178,12 @@ const MainLayout: React.FC = () => {
             <Input placeholder="Title" autoFocus />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Create
-            </Button>
+            <Button type="primary" htmlType="submit">Create</Button>
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* ─── sidebar ─── */}
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        {/* header */}
         <div className="sidebar-header">
           <div className="logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
             <img src={Logo} alt="Logo" className="sidebar-logo" />
@@ -202,7 +191,6 @@ const MainLayout: React.FC = () => {
           <div className="search-container">
             <div className={`search-input-wrapper ${isSearchVisible ? 'visible' : ''}`}>
               <Input
-                className="search-input"
                 placeholder="Search notes..."
                 value={searchQuery}
                 onChange={handleSearchChange}
@@ -216,18 +204,12 @@ const MainLayout: React.FC = () => {
           </div>
         </div>
 
-        {/* new note */}
         <div className="new-note-container">
-          <Button
-            className="new-note-btn"
-            onClick={() => setIsModalVisible(true)}
-            icon={<PlusOutlined />}
-          >
-            New Note
+          <Button className="new-note-btn" onClick={() => setIsModalVisible(true)}>
+            <PlusOutlined /> New Note
           </Button>
         </div>
 
-        {/* notes list */}
         <div className="notes-section">
           <div className="all-notes-header">All Notes</div>
           {loading ? (
@@ -245,7 +227,6 @@ const MainLayout: React.FC = () => {
             ))
           )}
 
-          {/* footer */}
           <div className="more-section">More</div>
           <div className="note-list-footer">
             <div className="note-item">
@@ -258,8 +239,7 @@ const MainLayout: React.FC = () => {
             </div>
           </div>
 
-          {/* AI tools (editor only) */}
-          {isNoteEditorPage && (
+          {isNoteEditorPage && aiTools && (
             <div className="ai-tools-section">
               <div className="note-item ai-tool-item" onClick={handleTextToSpeech}>
                 <SoundOutlined className="note-icon" />
@@ -276,7 +256,6 @@ const MainLayout: React.FC = () => {
             </div>
           )}
 
-          {/* collapse */}
           <div className="collapse-sidebar" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -291,19 +270,16 @@ const MainLayout: React.FC = () => {
         </div>
       </div>
 
-      {/* main content */}
       <div className="main-content">
         <Outlet />
       </div>
 
-      {/* settings */}
       <SettingsModal
         open={isSettingsVisible}
         onClose={() => setIsSettingsVisible(false)}
         onLogout={handleLogout}
       />
 
-      {/* ─── Quiz-It drawer ─── */}
       <Drawer
         className="side-drawer"
         title="Quiz-It"
@@ -316,7 +292,6 @@ const MainLayout: React.FC = () => {
         {/* TODO: Quiz-It UI */}
       </Drawer>
 
-      {/* ─── Summarize drawer ─── */}
       <Drawer
         className="side-drawer"
         title="Summarize"

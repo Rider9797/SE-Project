@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Input, Button, Dropdown, Menu, message } from 'antd';
+import { Input, Button, message } from 'antd';
 import {
+  BoldOutlined,
+  ItalicOutlined,
+  UnderlineOutlined,
   CalendarOutlined,
   TagOutlined,
-  MoreOutlined,
-  FilePdfOutlined,
   SaveOutlined,
   DeleteOutlined,
+  FilePdfOutlined,
+  PictureOutlined,
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -14,59 +17,71 @@ import { authedApi } from './api';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-/* ---------- custom dark toolbar ---------- */
-const QuillToolbar: React.FC = () => (
+/* ---------- custom dark toolbar markup ---------- */
+const QuillToolbar = () => (
   <div id="note-toolbar" className="custom-quill-toolbar">
-    <select className="ql-header" defaultValue="">
-      <option value="">Normal</option>
+    <select className="ql-header" defaultValue="0">
+      <option value="0">Normal</option>
       <option value="1">Heading 1</option>
       <option value="2">Heading 2</option>
       <option value="3">Heading 3</option>
     </select>
-
     <button className="ql-bold" />
     <button className="ql-italic" />
     <button className="ql-underline" />
     <button className="ql-list" value="ordered" />
     <button className="ql-list" value="bullet" />
     <button className="ql-clean" />
+    <button className="multimedia-btn">
+      <span className="multimedia-icon">
+        <img src="/media-icon.svg" alt="" />
+      </span>
+      Add Multimedia
+    </button>
   </div>
 );
 
-/* ---------- Quill config ---------- */
-const quillModules = { toolbar: { container: '#note-toolbar' }, clipboard: { matchVisual: false } };
-const quillFormats = ['header', 'bold', 'italic', 'underline', 'list', 'bullet', 'clean'];
+const modules = {
+  toolbar: { container: '#note-toolbar' },
+  clipboard: { matchVisual: false },
+};
 
-/* ---------- local types ---------- */
-interface Note {
-  _id: string;
-  title: string;
-  content: string;
-  created_at: string;
-  tags?: string[];
-}
+const formats = [
+  'header',
+  'bold',
+  'italic',
+  'underline',
+  'list',
+  'bullet',
+  'clean',
+];
 
-/* ────────────────────────────────────────────────────────── */
 const NoteEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [note, setNote] = useState<Note | null>(null);
+  const [note, setNote] = useState<{
+    _id: string;
+    title: string;
+    content: string;
+    created_at: string;
+  } | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [date] = useState(() => new Date().toLocaleDateString());
+  const [tags] = useState(['Personal']);
 
-  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isSaving = useRef(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSavingRef = useRef(false);
 
-  /* ---------- fetch note ---------- */
   useEffect(() => {
-    if (!id) return;
     const fetchNote = async () => {
       try {
         setLoading(true);
-        const { data } = await authedApi.get<Note>(`/notes/${id}`);
-        setNote(data);
-      } catch {
+        const response = await authedApi.get(`/notes/${id}`);
+        setNote(response.data);
+      } catch (error) {
         message.error('Failed to load note');
         navigate('/Dashboard');
       } finally {
@@ -76,42 +91,45 @@ const NoteEditor: React.FC = () => {
     fetchNote();
   }, [id, navigate]);
 
-  /* ---------- auto-save helpers ---------- */
   const persistNote = useCallback(async () => {
-    if (!note || isSaving.current) return;
-    isSaving.current = true;
+    if (!note || isSavingRef.current) return;
+    isSavingRef.current = true;
     try {
-      await authedApi.put(`/notes/${id}`, { title: note.title, content: note.content });
+      await authedApi.put(`/notes/${id}`, {
+        title: note.title,
+        content: note.content,
+      });
     } finally {
-      isSaving.current = false;
+      isSavingRef.current = false;
     }
   }, [id, note]);
 
   const debounceSave = useCallback(() => {
-    if (saveTimeout.current) clearTimeout(saveTimeout.current);
-    saveTimeout.current = setTimeout(persistNote, 1500);
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(persistNote, 2000);
   }, [persistNote]);
 
-  /* ---------- field handlers ---------- */
-  const handleTitleChange = (value: string) => {
+  const handleTitleChange = (title: string) => {
     if (!note) return;
-    setNote({ ...note, title: value });
+    setNote({ ...note, title });
     debounceSave();
   };
 
-  const handleContentChange = (html: string) => {
+  const handleContentChange = (content: string) => {
     if (!note) return;
-    setNote({ ...note, content: html });
+    setNote({ ...note, content });
     debounceSave();
   };
 
-  /* ---------- manual save / delete ---------- */
   const handleManualSave = async () => {
     if (!note) return;
-    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     try {
       message.loading({ content: 'Saving…', key: 'saveNote' });
-      await authedApi.put(`/notes/${id}`, { title: note.title, content: note.content });
+      await authedApi.put(`/notes/${id}`, {
+        title: note.title,
+        content: note.content,
+      });
       message.success({ content: 'Note saved!', key: 'saveNote' });
     } catch {
       message.error({ content: 'Failed to save', key: 'saveNote' });
@@ -128,53 +146,35 @@ const NoteEditor: React.FC = () => {
     }
   };
 
-  /* ---------- dropdown ---------- */
-  const moreMenu = (
-    <Menu>
-      <Menu.Item key="save" icon={<SaveOutlined />} onClick={handleManualSave}>
-        Save Note
-      </Menu.Item>
-      <Menu.Item key="delete" icon={<DeleteOutlined />} danger onClick={handleDeleteNote}>
-        Delete Note
-      </Menu.Item>
-      <Menu.Item
-        key="pdf"
-        icon={<FilePdfOutlined />}
-        disabled={isExporting}
-        onClick={async () => {
-          if (!note) return;
-          setIsExporting(true);
-          try {
-            const res = await fetch(`http://localhost:5000/api/notes/${id}/pdf`, { credentials: 'include' });
-            if (!res.ok) throw new Error();
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `note_${note.title || 'untitled'}.pdf`;
-            a.click();
-            URL.revokeObjectURL(url);
-          } catch {
-            message.error('PDF export failed');
-          } finally {
-            setIsExporting(false);
-          }
-        }}
-      >
-        {isExporting ? 'Exporting…' : 'Export as PDF'}
-      </Menu.Item>
-    </Menu>
-  );
+  const handleExportPdf = async () => {
+    setIsExporting(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/notes/${id}/pdf`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `note_${note?.title || 'untitled'}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      message.error('PDF export failed');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
-  /* ---------- render ---------- */
-  if (loading || !note) return <div className="note-loading">Loading…</div>;
+  const handleAddMultimedia = () => {
+    message.info('Multimedia upload functionality coming soon');
+  };
 
-  const createdDate = new Date(note.created_at).toLocaleDateString();
-  const tagString = note.tags?.join(', ') || '—';
+  if (loading || !note) return <div>Loading…</div>;
 
   return (
     <div className="note-editor-container">
-      {/* ───── HEADER ───── */}
       <div className="note-editor-header">
         <div className="title-and-more">
           <Input
@@ -182,36 +182,53 @@ const NoteEditor: React.FC = () => {
             value={note.title}
             onChange={(e) => handleTitleChange(e.target.value)}
             bordered={false}
-            placeholder="Untitled"
+            placeholder="Note Title"
           />
-          <Dropdown overlay={moreMenu} trigger={['click']} placement="bottomRight">
-            <Button icon={<MoreOutlined />} className="more-options-btn" />
-          </Dropdown>
+          <div className="action-buttons">
+            <Button 
+              icon={<SaveOutlined />} 
+              className="action-btn save-btn" 
+              onClick={handleManualSave}
+              title="Save Note"
+            />
+            <Button 
+              icon={<FilePdfOutlined />} 
+              className="action-btn export-btn" 
+              onClick={handleExportPdf}
+              loading={isExporting}
+              title="Export as PDF"
+            />
+            <Button 
+              icon={<DeleteOutlined />} 
+              className="action-btn delete-btn" 
+              onClick={handleDeleteNote}
+              title="Delete Note"
+            />
+          </div>
         </div>
 
         <div className="meta-container">
           <div className="meta-item">
             <CalendarOutlined className="meta-icon" />
-            <span className="meta-label">Date:&nbsp;</span>
-            <span className="meta-value">{createdDate}</span>
+            <div className="meta-label">Date</div>
+            <div className="meta-value">{date}</div>
           </div>
           <div className="meta-item">
             <TagOutlined className="meta-icon" />
-            <span className="meta-label">Tags:&nbsp;</span>
-            <span className="meta-value">{tagString}</span>
+            <div className="meta-label">Tags</div>
+            <div className="meta-value">{tags.join(', ')}</div>
           </div>
         </div>
       </div>
 
-      {/* ───── EDITOR ───── */}
       <div className="note-content-area">
         <QuillToolbar />
         <ReactQuill
           theme="snow"
-          value={note.content}
+          value={note.content || ''}
           onChange={handleContentChange}
-          modules={quillModules}
-          formats={quillFormats}
+          modules={modules}
+          formats={formats}
           placeholder="Start writing…"
         />
       </div>
