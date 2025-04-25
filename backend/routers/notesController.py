@@ -53,8 +53,7 @@ def create_note_route():
         content=data.get('content', '')  # Fixed syntax: data.get() not data.get[]
     )
     response = jsonify({"note_id": str(note_id)}), 201
-    # response.headers.add('Access-Control-Allow-Credentials', 'true')
-    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+
     return response
 
 @notes_routes.route("/notes/<note_id>", methods=["PUT"])
@@ -63,7 +62,6 @@ def update_note_route(note_id):  # Renamed to avoid conflict
     data = request.json
     user_id = get_jwt_identity()
     
-    # Verify note belongs to user
     note = get_note_by_id(note_id)
     if not note or note['user_id'] != user_id:
         return jsonify({"msg": "Note not found"}), 404
