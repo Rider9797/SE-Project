@@ -9,7 +9,7 @@ const { Title } = Typography;
 const Dashboard: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token] = useState<string | null>(localStorage.getItem('token'));
   const navigate = useNavigate();
 
   authedApi.interceptors.response.use(

@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Input, Button, message } from 'antd';
 import {
-  BoldOutlined,
-  ItalicOutlined,
-  UnderlineOutlined,
+  // BoldOutlined,
+  // ItalicOutlined,
+  // UnderlineOutlined,
   CalendarOutlined,
   TagOutlined,
   SaveOutlined,
   DeleteOutlined,
   FilePdfOutlined,
-  PictureOutlined,
+  // PictureOutlined,
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -199,9 +199,9 @@ const NoteEditor: React.FC = () => {
     }
   };
 
-  const handleAddMultimedia = () => {
-    message.info('Multimedia upload functionality coming soon');
-  };
+  // const handleAddMultimedia = () => {
+  //   message.info('Multimedia upload functionality coming soon');
+  // };
 
   if (loading || !note) return <div>Loading…</div>;
   

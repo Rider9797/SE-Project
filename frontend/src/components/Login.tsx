@@ -3,19 +3,26 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { setAuthToken } from '../utils/authorisation';
+// import { setAuthToken } from '../utils/authorisation';
 import LogoImage from './assets/Frame.svg';
 import GoogleIcon from './assets/GoogleIcon.svg'; // Google icon SVG (unused right now)
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const response = await axios.post('http://127.0.0.1:5000/auth/login', values, {
         withCredentials: true,
       });
+      
+      if (rememberMe) {
+        document.cookie = `session_id=${response.data.access_token}; path=/; max-age=${
+          30 * 24 * 60 * 60
+        }`;
+      }
 
       localStorage.setItem('token', response.data.access_token);
       message.success('Login successful!');
