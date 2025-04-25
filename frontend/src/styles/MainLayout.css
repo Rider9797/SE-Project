@@ -1,16 +1,16 @@
 /* styles/MainLayout.css */
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap');
-html, body { background: #181818; }
+html, body { background: var(--bg); }
 /* prevent white behind the rounded inside edge */.side-drawer .ant-drawer-content-wrapper,
 .side-drawer .ant-drawer-wrapper-body {
-  background:#181818 !important;
+  background: var(--bg) !important; 
 }
 /* Main Layout */
 .main-layout {
   display: flex;
   height: 100vh;
   width: 100vw; /* Full viewport width */
-  background-color: #181818;
+  background-color:var(--bg); 
   font-family: 'Source Sans Pro', sans-serif;
   overflow: hidden; /* Prevent any scrolling */
 }
@@ -25,7 +25,7 @@ html, body { background: #181818; }
   gap: 30px;
   flex-shrink: 0;
   align-self: stretch;
-  background: #181818;
+  background: var(--bg); 
   position: relative;
 }
 
@@ -56,7 +56,7 @@ html, body { background: #181818; }
 .search-icon {
   width: 24px;
   height: 24px;
-  color: #FFF;
+  color:var(--fg);
   cursor: pointer;
 }
 
@@ -80,7 +80,7 @@ html, body { background: #181818; }
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.05) !important;
   border: none !important;
-  color: #FFF !important;
+  color:var(--fg)!important;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 16px;
   font-style: normal;
@@ -102,7 +102,7 @@ html, body { background: #181818; }
 }
 
 .all-notes-header {
-  color: rgba(255, 255, 255, 0.60);
+  color:var(--fg-muted);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   font-style: normal;
@@ -126,7 +126,7 @@ html, body { background: #181818; }
   gap: 10px;
   border-radius: 8px;
   cursor: pointer;
-  color: #FFF;
+  color:var(--fg);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -146,7 +146,7 @@ html, body { background: #181818; }
 }
 
 .more-section {
-  color: rgba(255, 255, 255, 0.6);
+  color:var(--fg-muted);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -172,7 +172,7 @@ html, body { background: #181818; }
 }
 
 .tools-section-header {
-  color: rgba(255, 255, 255, 0.60);
+  color:var(--fg-muted);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   font-style: normal;
@@ -193,7 +193,7 @@ html, body { background: #181818; }
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.50);
   cursor: pointer;
-  color: #FFF;
+  color:var(--fg);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -228,7 +228,7 @@ html, body { background: #181818; }
 .main-content {
   flex: 1;
   overflow: auto; /* Allow scrolling only inside content */
-  background-color: #181818;
+  background-color:var(--bg);
   padding: 24px;
 }
 
@@ -236,7 +236,7 @@ html, body { background: #181818; }
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background: #181818;
+  background:var(--bg);
   width: 100%;
 }
 
@@ -261,10 +261,11 @@ html, body { background: #181818; }
 
 .empty-icon {
   margin-bottom: 20px;
+  color: var(--bg)
 }
 
 .empty-title {
-  color: #FFF !important;
+  color:var(--fg)!important;
   font-family: 'Source Sans Pro', sans-serif !important;
   font-size: 24px !important;
   font-weight: 600 !important;
@@ -273,7 +274,7 @@ html, body { background: #181818; }
 }
 
 .empty-description {
-  color: rgba(255, 255, 255, 0.6);
+  color:var(--fg-muted);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   text-align: center;
@@ -287,7 +288,7 @@ html, body { background: #181818; }
 }
 
 .recent-notes-title {
-  color: #FFF !important;
+  color:var(--fg)!important;
   font-family: 'Source Sans Pro', sans-serif !important;
   font-size: 24px !important;
   font-weight: 600 !important;
@@ -303,7 +304,7 @@ html, body { background: #181818; }
 }
 
 .note-card {
-  background-color: #232323;
+  background-color:var(--bg-soft);
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
@@ -314,7 +315,7 @@ html, body { background: #181818; }
 }
 
 .note-card-title {
-  color: #FFF;
+  color:var(--fg);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -322,7 +323,7 @@ html, body { background: #181818; }
 }
 
 .note-card-date {
-  color: rgba(255, 255, 255, 0.6);
+  color:var(--fg-muted);
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 12px;
   margin-bottom: 8px;
@@ -434,7 +435,7 @@ html, body { background: #181818; }
 .search-icon {
   width: 24px;
   height: 24px;
-  color: #FFF;
+  color: var(--fg) !important;
   cursor: pointer;
   z-index: 10;
   position: relative;
@@ -464,23 +465,21 @@ html, body { background: #181818; }
 
 /* Style for the actual input */
 .search-input {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background: var(--bg-soft) !important;      /* light grey / dark soft */
+  border: 1px solid var(--fg-muted) !important;
   border-radius: 4px;
-  color: #FFF !important;
+  color: var(--fg) !important;
   width: 100%;
   height: 32px;
   padding: 4px 8px;
 }
 
 .search-input input {
-  color: #FFF !important;
   background: transparent !important;
+  color: var(--fg) !important;
 }
 
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
+
 
 /* Handle collapsed sidebar state */
 .sidebar.collapsed .search-input-wrapper.visible {
@@ -489,24 +488,24 @@ html, body { background: #181818; }
 
 /* Modal styles for dark theme */
 .ant-modal-content {
-  background-color: #181818 !important;
+  background-color:var(--bg)!important;
   border-radius: 16px !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
 .ant-modal-header {
-  background-color: #181818 !important;
+  background-color:var(--bg)!important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 16px 16px 0 0 !important; 
 }
 
 .ant-modal-title {
-  color: #FFFFFF !important;
+  color:var(--fg)!important;
   font-family: 'Source Sans Pro', sans-serif !important;
 }
 
 .ant-modal-close {
-  color: rgba(255, 255, 255, 0.65) !important;
+  color:var(--fg)!important;
 }
 
 .ant-modal-close:hover {
@@ -514,12 +513,12 @@ html, body { background: #181818; }
 }
 
 .ant-modal-body {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color:var(--fg-muted)!important
 }
 
 .ant-modal-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background-color: #181818 !important;
+  background-color:var(--bg)!important;
   border-radius: 0 0 16px 16px !important;
 }
 
@@ -612,3 +611,133 @@ html, body { background: #181818; }
   font-weight: 600;
 }
 .side-drawer .ant-drawer-close  { color: #ffffff !important; }
+
+/* ───── Dashboard empty‐state SVG color ───── */
+.empty-icon svg path {
+  /* Override inline white stroke */
+  stroke: var(--fg) !important;
+}
+
+
+
+/* Style for the actual input */
+.search-input {
+  background: var(--bg-soft) !important;
+  border: 1px solid var(--fg-muted) !important;
+  border-radius: 4px;
+  color: var(--fg) !important;
+  width: 100%;
+  height: 32px;
+  padding: 4px 8px;
+}
+
+.search-input input {
+  background: transparent !important;
+  color: var(--fg) !important;
+}
+
+/* correct placeholder colour */
+.search-input::placeholder {
+  color: var(--fg-muted) !important;
+}
+.search-input input::placeholder {
+  color: var(--fg-muted) !important;
+}
+
+/* ───── Dashboard empty‐state SVG color ───── */
+.empty-icon svg path {
+  stroke: var(--fg) !important;
+}
+
+/* Trash Modal Styles */
+.trash-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.empty-trash-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: var(--fg-muted);
+}
+
+.empty-trash-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: var(--fg-muted);
+}
+
+.loading-trash {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  color: var(--fg-muted);
+}
+
+/* Table styles for trash modal */
+.trash-table {
+  background: transparent;
+}
+
+.trash-table .ant-table {
+  background: transparent !important;
+  color: var(--fg) !important;
+}
+
+.trash-table .ant-table-thead > tr > th {
+  background: var(--bg-soft) !important;
+  color: var(--fg) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.trash-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: var(--fg-muted) !important;
+}
+
+.trash-table .ant-table-tbody > tr:hover > td {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.trash-note-title {
+  color: var(--fg) !important;
+  font-weight: 500;
+}
+
+/* Restore and Delete buttons */
+.restore-note-btn {
+  color: #52c41a !important;
+}
+
+.restore-note-btn:hover {
+  background: rgba(82, 196, 26, 0.1) !important;
+}
+
+.delete-note-permanently-btn {
+  color: #ff4d4f !important;
+}
+
+.delete-note-permanently-btn:hover {
+  background: rgba(255, 77, 79, 0.1) !important;
+}
+
+/* Fix for Table Pagination in dark mode */
+.trash-table .ant-pagination-item {
+  background: var(--bg-soft) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.trash-table .ant-pagination-item a {
+  color: var(--fg) !important;
+}
+
+.trash-table .ant-pagination-item-active {
+  border-color: #1890ff !important;
+}
+
+.trash-table .ant-pagination-prev button,
+.trash-table .ant-pagination-next button {
+  color: var(--fg) !important;
+}

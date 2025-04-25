@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Button, Form, Modal, Drawer, Input, message } from 'antd';
+import { Button, Form, Modal, Drawer, Input, message, Table, Space } from 'antd';
 import {
   SearchOutlined,
   PlusOutlined,
@@ -10,7 +10,9 @@ import {
   SignatureOutlined,
   SoundOutlined,
   SolutionOutlined,
-  CodeOutlined
+  CodeOutlined,
+  RestOutlined,
+  UndoOutlined
 } from '@ant-design/icons';
 import { useFeatures } from '../contexts/FeatureFlags';
 import '../styles/MainLayout.css';
@@ -26,6 +28,10 @@ interface Note {
   created_at: string;
 }
 
+interface TrashedNote extends Note {
+  deleted_at: string;
+}
+
 const MainLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -34,11 +40,14 @@ const MainLayout: React.FC = () => {
   const [isQuizVisible, setQuizVisible] = useState(false);
   const [isSummaryVisible, setSummaryVisible] = useState(false);
   const [isNewToolVisible, setNewToolVisible] = useState(false);
+  const [isTrashModalVisible, setIsTrashModalVisible] = useState(false);
   const [quizContent, setQuizContent] = useState('');
   const [summaryContent, setSummaryContent] = useState('');
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
+  const [trashedNotes, setTrashedNotes] = useState<TrashedNote[]>([]);
+  const [loadingTrash, setLoadingTrash] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,6 +96,47 @@ const MainLayout: React.FC = () => {
       handleApiError(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTrashedNotes = async () => {
+    setLoadingTrash(true);
+    try {
+      const { data } = await authedApi.get('/notes/trash');
+      setTrashedNotes(data);
+    } catch (e) {
+      handleApiError(e, 'Failed to load trashed notes');
+    } finally {
+      setLoadingTrash(false);
+    }
+  };
+
+  const handleTrashClick = () => {
+    fetchTrashedNotes();
+    setIsTrashModalVisible(true);
+  };
+
+  const handleRestoreNote = async (noteId: string) => {
+    try {
+      await authedApi.post(`/notes/${noteId}/restore`);
+      message.success('Note restored successfully');
+      // Remove from trash list
+      setTrashedNotes(trashedNotes.filter(note => note._id !== noteId));
+      // Refresh notes list
+      fetchNotes();
+    } catch (e) {
+      handleApiError(e, 'Failed to restore note');
+    }
+  };
+
+  const handlePermanentDelete = async (noteId: string) => {
+    try {
+      await authedApi.delete(`/notes/${noteId}/permanent`);
+      message.success('Note permanently deleted');
+      // Remove from trash list
+      setTrashedNotes(trashedNotes.filter(note => note._id !== noteId));
+    } catch (e) {
+      handleApiError(e, 'Failed to delete note');
     }
   };
 
@@ -207,6 +257,57 @@ const MainLayout: React.FC = () => {
     }
   };
 
+  // Format date utility function
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  // Columns for the trashed notes table
+  const trashColumns = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+      render: (text: string) => <span className="trash-note-title">{text}</span>,
+    },
+    {
+      title: 'Date Deleted',
+      dataIndex: 'deleted_at',
+      key: 'deleted_at',
+      render: (date: string) => formatDate(date),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: TrashedNote) => (
+        <Space size="middle">
+          <Button 
+            type="text" 
+            icon={<UndoOutlined />} 
+            className="restore-note-btn"
+            onClick={() => handleRestoreNote(record._id)}
+          >
+            Restore
+          </Button>
+          <Button 
+            type="text" 
+            danger 
+            icon={<DeleteOutlined />} 
+            className="delete-note-permanently-btn"
+            onClick={() => handlePermanentDelete(record._id)}
+          >
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <div className="main-layout">
       {/* Logout Confirmation */}
@@ -241,6 +342,33 @@ const MainLayout: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Trash Modal */}
+      <Modal
+        title="Trash"
+        open={isTrashModalVisible}
+        onCancel={() => setIsTrashModalVisible(false)}
+        footer={null}
+        width={700}
+        className="trash-modal"
+      >
+        {loadingTrash ? (
+          <div className="loading-trash">Loading trashed notes...</div>
+        ) : trashedNotes.length === 0 ? (
+          <div className="empty-trash-state">
+            <RestOutlined className="empty-trash-icon" />
+            <p>Your trash is empty</p>
+          </div>
+        ) : (
+          <Table 
+            dataSource={trashedNotes} 
+            columns={trashColumns} 
+            rowKey="_id"
+            pagination={false}
+            className="trash-table"
+          />
+        )}
       </Modal>
 
       {/* Sidebar */}
@@ -303,7 +431,10 @@ const MainLayout: React.FC = () => {
 
           <div className="more-section">More</div>
           <div className="note-list-footer">
-            <div className="note-item">
+            <div
+              className="note-item"
+              onClick={handleTrashClick}
+            >
               <DeleteOutlined className="note-icon" />
               <span>Trash</span>
             </div>

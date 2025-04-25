@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Input, Button, message } from 'antd';
+import { Input, Button, message, Tag } from 'antd';
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -10,6 +10,7 @@ import {
   DeleteOutlined,
   FilePdfOutlined,
   PictureOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -78,12 +79,15 @@ const NoteEditor: React.FC = () => {
     title: string;
     content: string;
     created_at: string;
+    tags?: string[];
   } | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [date] = useState(() => new Date().toLocaleDateString());
-  const [tags] = useState(['Personal']);
+  const [inputVisible, setInputVisible] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<Input | null>(null);
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSavingRef = useRef(false);
@@ -104,6 +108,12 @@ const NoteEditor: React.FC = () => {
     fetchNote();
   }, [id, navigate]);
 
+  useEffect(() => {
+    if (inputVisible) {
+      inputRef.current?.focus();
+    }
+  }, [inputVisible]);
+
   const persistNote = useCallback(async () => {
     if (!note || isSavingRef.current) return;
     isSavingRef.current = true;
@@ -111,6 +121,7 @@ const NoteEditor: React.FC = () => {
       await authedApi.put(`/notes/${id}`, {
         title: note.title,
         content: note.content,
+        tags: note.tags,
       });
     } finally {
       isSavingRef.current = false;
@@ -137,12 +148,13 @@ const NoteEditor: React.FC = () => {
   const handleManualSave = async () => {
     if (!note) return;
 
-    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     try {
       message.loading({ content: 'Saving…', key: 'saveNote' });
       await authedApi.put(`/notes/${id}`, {
         title: note.title,
         content: note.content,
+        tags: note.tags,
       });
       message.success({ content: 'Note saved!', key: 'saveNote' });
       await authedApi.post(`/notes/${id}/autotag`);
@@ -160,9 +172,7 @@ const NoteEditor: React.FC = () => {
           : prevNote
       );
 
-
-    message.success({ content: 'Note saved with updated tags!', key: 'saveNote' });
-
+      message.success({ content: 'Note saved with updated tags!', key: 'saveNote' });
     } catch {
       message.error({ content: 'Failed to save', key: 'saveNote' });
     }
@@ -203,14 +213,41 @@ const NoteEditor: React.FC = () => {
     message.info('Multimedia upload functionality coming soon');
   };
 
+  // Tag handling functions
+  const showInput = () => {
+    setInputVisible(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputConfirm = () => {
+    if (inputValue && note) {
+      const tags = [...(note.tags || [])];
+      if (inputValue && !tags.includes(inputValue)) {
+        tags.push(inputValue);
+        setNote({ ...note, tags });
+        debounceSave();
+      }
+    }
+    setInputVisible(false);
+    setInputValue('');
+  };
+
+  const handleRemoveTag = (removedTag: string) => {
+    if (!note) return;
+    const tags = note.tags?.filter(tag => tag !== removedTag) || [];
+    setNote({ ...note, tags });
+    debounceSave();
+  };
+
   if (loading || !note) return <div>Loading…</div>;
   
   const createdDate = new Date(note.created_at).toLocaleDateString();
   const tagString = note.ai_tag
-  ? Object.values(note.ai_tag).filter(Boolean).join(', ')
-  : '—';
-
-
+    ? Object.values(note.ai_tag).filter(Boolean).join(', ')
+    : '—';
 
   return (
     <div className="note-editor-container">
@@ -255,13 +292,43 @@ const NoteEditor: React.FC = () => {
           <div className="meta-item">
             <TagOutlined className="meta-icon" />
             <div className="meta-label">Tags</div>
-            <div className="meta-value">{tags.join(', ')}</div>
+            <div className="meta-value tag-container">
+              {note.tags && note.tags.length > 0 ? (
+                note.tags.map((tag, index) => (
+                  <Tag
+                    className="edit-tag"
+                    key={tag}
+                    closable
+                    onClose={() => handleRemoveTag(tag)}
+                  >
+                    {tag}
+                  </Tag>
+                ))
+              ) : null}
+              {inputVisible ? (
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  size="small"
+                  className="tag-input"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleInputConfirm}
+                  onPressEnter={handleInputConfirm}
+                  placeholder="Press enter to add"
+                />
+              ) : (
+                <Tag className="site-tag-plus" onClick={showInput}>
+                  <PlusOutlined /> Add tag
+                </Tag>
+              )}
+            </div>
           </div>
+          <QuillToolbar />
         </div>
       </div>
 
       <div className="note-content-area">
-        <QuillToolbar />
         <ReactQuill
           theme="snow"
           value={note.content || ''}
