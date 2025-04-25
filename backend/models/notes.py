@@ -297,14 +297,6 @@ from config import notes_collection  # Assuming you have this set up
 #         print(f"Error generating speech: {e}")
 #         return jsonify({"msg": f"Error generating speech: {str(e)}"}), 500
     
-
-import asyncio
-import edge_tts
-from flask import send_file, jsonify
-from bson import ObjectId
-from config import notes_collection
-from io import BytesIO
-
 import asyncio
 from io import BytesIO
 from bson import ObjectId

@@ -380,3 +380,32 @@ input:-webkit-autofill:focus,
   /* stop the blue flash that can appear for a split-second */
   transition: background-color 600000s 0s, color 600000s 0s;
 }
+
+/* ────────────────────────────────────────────────────────────────
+   AUTH PAGES OVERRIDES: scrolling + footer-text positioning
+   ──────────────────────────────────────────────────────────────── */
+
+
+
+/* 2) Reset footer-text to sit below the form, not fixed at bottom */
+.login-container .footer-text,
+.signup-container .footer-text {
+  position: static !important; /* undo the fixed positioning */
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+  width: auto;                 /* fit content */
+  max-width: 400px;            /* same as form width */
+  margin: 2rem auto 1rem;      /* spacing above & below */
+  text-align: center;
+  color: var(--fg-muted);      /* keep the muted color */
+  font-size: 0.875rem;         /* ~14px */
+  padding: 0;
+}
+
+/* 3) Optional: ensure the container’s content can never be hidden */
+.login-container *,
+.signup-container * {
+  box-sizing: border-box;
+}
+
