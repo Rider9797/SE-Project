@@ -31,6 +31,7 @@ except Exception as e:
 db = client["note_taking_db"] 
 notes_collection = db["notes"]
 users_collection = db["users"]
+summary_collection = db["summary"]
 
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
 
