@@ -160,6 +160,7 @@ def get_markdown_note(note_id):
 
 
 
+
 def get_pdf_summary(note_id):
     print(f"Fetching note for summary: {note_id}")
 
@@ -175,7 +176,7 @@ def get_pdf_summary(note_id):
     try:
         print("Note content:", note.get('content', 'No content available'))
 
-        prompt = f"Summarize this note in a fun way yipeeee:\n\n{note['content']}"
+        prompt = f"Summarize this note :\n\n{note['content']}"
         response = model.generate_content(prompt)
         summary = response.text
         print("Generated summary:", summary)
@@ -237,6 +238,7 @@ from flask import Flask, request, send_file, jsonify
 from bson.objectid import ObjectId
 
 from config import notes_collection  # Assuming you have this set up
+
 
     
 import asyncio
@@ -326,10 +328,6 @@ from flask import jsonify
 from config import notes_collection
 from bs4 import BeautifulSoup
 
-# Reuse your existing Gemini model and clean text function
-# from your setup:
-# - `model = genai.GenerativeModel(...)`
-# - `extract_clean_text(...)`
 
 def autotag_note(note_id):
     print(f"Auto-tagging note: {note_id}")

@@ -10,7 +10,7 @@
 .settings-modal-root .ant-modal-header,
 .settings-modal-root .ant-modal-body,
 .settings-modal-root .ant-modal-footer {
-  background: #181818;
+  background:var(--bg);
   border-radius: 24px !important;  /* ensure rounded */
   overflow: hidden;               /* clip inner white corners */
 }
@@ -29,7 +29,7 @@
   padding: 30px 0;
   flex-direction: column;
   gap: 31px;
-  background: #181818;
+  background:var(--bg);
   flex-shrink: 0;
 }
 
@@ -40,7 +40,7 @@
   padding: 22px 30px; /* taller */
   align-self: stretch; /* full width */
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.60);
+  color:var(--fg-muted);
   font: 600 16px "Source Sans Pro";
   transition: background 0.25s;
 }
@@ -48,8 +48,8 @@
 .rail-btn.active,
 .rail-btn:hover {
   border-radius: 3px;
-  background: rgba(69, 69, 69, 0.42);
-  color: rgba(255, 255, 255, 0.85);
+  background:rgba(69,69,69,.42);
+  color:var(--fg)
 }
 
 .rail-btn .anticon {
@@ -61,7 +61,7 @@
   left: 85px;
   bottom: 26.142px;
   font: 600 10px "Source Sans Pro";
-  color: rgba(255, 255, 255, 0.60);
+  color:var(--fg-muted)
 }
 
 /* ---------- Right‑hand pane ---------- */
@@ -71,20 +71,20 @@
   display: flex;
   flex-direction: column;
   gap: 37px;
-  background: #181818;
+  background:var(--bg);
   overflow-y: auto;
 }
 
 /* Typography */
 .section-heading {
   margin: 0;
-  color: #ffffff;
+  color:var(--fg);
   font: 600 28px "Source Sans Pro";
 }
 
 .sub-heading {
   margin: 0;
-  color: #ffffff;
+  color:var(--fg);
   font: 600 18px "Source Sans Pro";
 }
 
@@ -97,12 +97,12 @@
 
 .label {
   width: 120px;
-  color: rgba(255, 255, 255, 0.60);
+  color:var(--fg-muted);
   font: 600 14px "Source Sans Pro";
 }
 
 .value {
-  color: #ffffff;
+  color:var(--fg);
   font: 400 14px "Source Sans Pro";
 }
 

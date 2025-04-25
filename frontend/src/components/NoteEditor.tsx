@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Input, Button, message } from 'antd';
+import { Input, Button, message, Tag } from 'antd';
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -10,15 +10,16 @@ import {
   DeleteOutlined,
   FilePdfOutlined,
   PictureOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { authedApi } from './api';
+import { authedApi, mediaApi } from './api';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 /* ---------- custom dark toolbar markup ---------- */
-const QuillToolbar = () => (
+const QuillToolbar = ({ onAddMultimedia }: { onAddMultimedia: () => void }) => (
   <div id="note-toolbar" className="custom-quill-toolbar">
     <select className="ql-header" defaultValue="0">
       <option value="0">Normal</option>
@@ -32,7 +33,7 @@ const QuillToolbar = () => (
     <button className="ql-list" value="ordered" />
     <button className="ql-list" value="bullet" />
     <button className="ql-clean" />
-    <button className="multimedia-btn">
+    <button className="multimedia-btn" onClick={onAddMultimedia} type="button">
       <span className="multimedia-icon">
         <img src="/media-icon.svg" alt="" />
       </span>
@@ -54,7 +55,9 @@ const formats = [
   'list',
   'bullet',
   'clean',
+  'image',
 ];
+
 /* ---------- local types ---------- */
 interface Note {
   _id: string;
@@ -78,15 +81,22 @@ const NoteEditor: React.FC = () => {
     title: string;
     content: string;
     created_at: string;
+    tags?: string[];
   } | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [date] = useState(() => new Date().toLocaleDateString());
-  const [tags] = useState(['Personal']);
-
+  const [inputVisible, setInputVisible] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  
+  const inputRef = useRef<Input | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSavingRef = useRef(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const quillRef = useRef<ReactQuill | null>(null);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -104,6 +114,12 @@ const NoteEditor: React.FC = () => {
     fetchNote();
   }, [id, navigate]);
 
+  useEffect(() => {
+    if (inputVisible) {
+      inputRef.current?.focus();
+    }
+  }, [inputVisible]);
+
   const persistNote = useCallback(async () => {
     if (!note || isSavingRef.current) return;
     isSavingRef.current = true;
@@ -111,6 +127,7 @@ const NoteEditor: React.FC = () => {
       await authedApi.put(`/notes/${id}`, {
         title: note.title,
         content: note.content,
+        tags: note.tags,
       });
     } finally {
       isSavingRef.current = false;
@@ -137,32 +154,15 @@ const NoteEditor: React.FC = () => {
   const handleManualSave = async () => {
     if (!note) return;
 
-    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     try {
       message.loading({ content: 'Saving…', key: 'saveNote' });
       await authedApi.put(`/notes/${id}`, {
         title: note.title,
         content: note.content,
+        tags: note.tags,
       });
       message.success({ content: 'Note saved!', key: 'saveNote' });
-      await authedApi.post(`/notes/${id}/autotag`);
-      message.success({ content: 'AI Tags generated!', key: 'autoTag' });
-
-      // Fetch updated tags
-      const { data } = await authedApi.get(`/notes/${id}/gettags`);
-      const { main_subject, overarching_scheme, sub_topic } = data.tags;
-      setNote((prevNote) =>
-        prevNote
-          ? {
-              ...prevNote,
-              ai_tag: { main_subject, overarching_scheme, sub_topic },
-            }
-          : prevNote
-      );
-
-
-    message.success({ content: 'Note saved with updated tags!', key: 'saveNote' });
-
     } catch {
       message.error({ content: 'Failed to save', key: 'saveNote' });
     }
@@ -199,18 +199,102 @@ const NoteEditor: React.FC = () => {
     }
   };
 
-  // const handleAddMultimedia = () => {
-  //   message.info('Multimedia upload functionality coming soon');
-  // };
+
+
+  const handleAddMultimedia = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !id) return;
+  
+    // Clear the file input to allow uploading the same file again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('note_id', id);
+  
+    try {
+      setIsUploading(true);
+      setUploadProgress(0);
+      const response = await mediaApi.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
+          }
+        },
+      });
+  
+      const imageUrl = response.data.url;
+      const quillEditor = quillRef.current?.getEditor();
+  
+      if (quillEditor && imageUrl) {
+        const range = quillEditor.getSelection() || { index: 0, length: 0 };
+        
+        // Insert the image at the current cursor position
+        quillEditor.insertEmbed(range.index, 'image', imageUrl);
+        
+        // Move cursor after the image
+        quillEditor.setSelection(range.index + 1, 0);
+        
+        // Update the note content state to include the new image
+        setNote(prev => prev ? { 
+          ...prev, 
+          content: quillEditor.root.innerHTML 
+        } : null);
+      }
+  
+      message.success('Image uploaded successfully!');
+    } catch (err) {
+      console.error(err);
+      message.error('Image upload failed.');
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  // Tag handling functions
+  const showInput = () => {
+    setInputVisible(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputConfirm = () => {
+    if (inputValue && note) {
+      const tags = [...(note.tags || [])];
+      if (inputValue && !tags.includes(inputValue)) {
+        tags.push(inputValue);
+        setNote({ ...note, tags });
+        debounceSave();
+      }
+    }
+    setInputVisible(false);
+    setInputValue('');
+  };
+
+  const handleRemoveTag = (removedTag: string) => {
+    if (!note) return;
+    const tags = note.tags?.filter(tag => tag !== removedTag) || [];
+    setNote({ ...note, tags });
+    debounceSave();
+  };
 
   if (loading || !note) return <div>Loading…</div>;
   
   const createdDate = new Date(note.created_at).toLocaleDateString();
-  const tagString = note.ai_tag
-  ? Object.values(note.ai_tag).filter(Boolean).join(', ')
-  : '—';
-
-
 
   return (
     <div className="note-editor-container">
@@ -255,14 +339,52 @@ const NoteEditor: React.FC = () => {
           <div className="meta-item">
             <TagOutlined className="meta-icon" />
             <div className="meta-label">Tags</div>
-            <div className="meta-value">{tags.join(', ')}</div>
+            <div className="meta-value tag-container">
+              {note.tags && note.tags.length > 0 ? (
+                note.tags.map((tag, index) => (
+                  <Tag
+                    className="edit-tag"
+                    key={tag}
+                    closable
+                    onClose={() => handleRemoveTag(tag)}
+                  >
+                    {tag}
+                  </Tag>
+                ))
+              ) : null}
+              {inputVisible ? (
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  size="small"
+                  className="tag-input"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleInputConfirm}
+                  onPressEnter={handleInputConfirm}
+                  placeholder="Press enter to add"
+                />
+              ) : (
+                <Tag className="site-tag-plus" onClick={showInput}>
+                  <PlusOutlined /> Add tag
+                </Tag>
+              )}
+            </div>
           </div>
+          <QuillToolbar onAddMultimedia={handleAddMultimedia} />
         </div>
       </div>
 
       <div className="note-content-area">
-        <QuillToolbar />
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          onChange={handleFileChange}
+        />
         <ReactQuill
+          ref={(el) => (quillRef.current = el)}
           theme="snow"
           value={note.content || ''}
           onChange={handleContentChange}
