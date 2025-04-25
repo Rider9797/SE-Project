@@ -9,7 +9,8 @@ import {
   FileOutlined,
   SignatureOutlined,
   SoundOutlined,
-  SolutionOutlined
+  SolutionOutlined,
+  CodeOutlined
 } from '@ant-design/icons';
 import { useFeatures } from '../contexts/FeatureFlags';
 import '../styles/MainLayout.css';
@@ -32,6 +33,7 @@ const MainLayout: React.FC = () => {
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [isQuizVisible, setQuizVisible] = useState(false);
   const [isSummaryVisible, setSummaryVisible] = useState(false);
+  const [isNewToolVisible, setNewToolVisible] = useState(false);
   const [quizContent, setQuizContent] = useState('');
   const [summaryContent, setSummaryContent] = useState('');
 
@@ -64,7 +66,7 @@ const MainLayout: React.FC = () => {
         navigate('/');
       }
       return Promise.reject(err);
-    },
+    }
   );
 
   useEffect(() => {
@@ -128,8 +130,11 @@ const MainLayout: React.FC = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value;
     setSearchQuery(q);
-    if (q.length < 3)
-      setFilteredNotes(notes.filter((n) => n.title.toLowerCase().includes(q.toLowerCase())));
+    if (q.length < 3) {
+      setFilteredNotes(
+        notes.filter((n) => n.title.toLowerCase().includes(q.toLowerCase()))
+      );
+    }
   };
 
   const handleSearchSubmit = async (e?: React.KeyboardEvent<HTMLInputElement>) => {
@@ -141,16 +146,19 @@ const MainLayout: React.FC = () => {
       setFilteredNotes(data.notes);
     } catch {
       message.warning('Search failed, showing local matches');
-      setFilteredNotes(notes.filter((n) => n.title.toLowerCase().includes(q.toLowerCase())));
+      setFilteredNotes(
+        notes.filter((n) => n.title.toLowerCase().includes(q.toLowerCase()))
+      );
     }
   };
 
   const toggleSearch = () => {
     setIsSearchVisible((v) => !v);
-    if (!isSearchVisible)
+    if (!isSearchVisible) {
       setTimeout(() => {
         (document.querySelector('.search-input input') as HTMLInputElement)?.focus();
       }, 300);
+    }
   };
 
   /* ───────────── AI tools ───────────── */
@@ -160,11 +168,12 @@ const MainLayout: React.FC = () => {
       const response = await authedApi.get(`/notes/${noteId}/tts`, {
         responseType: 'blob',
       });
-  
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
+      const url = window.URL.createObjectURL(
+        new Blob([response.data], { type: 'audio/mpeg' })
+      );
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `note_${noteId}.MP3`); // 👈 ensure lowercase .mp3
+      link.setAttribute('download', `note_${noteId}.mp3`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -173,6 +182,7 @@ const MainLayout: React.FC = () => {
       console.error('TTS error:', error);
     }
   };
+
   const handleQuizIt = async () => {
     try {
       const noteId = location.pathname.split('/Dashboard/')[1].split('/')[0];
@@ -180,10 +190,11 @@ const MainLayout: React.FC = () => {
       setQuizContent(response.data.quiz);
       setQuizVisible(true);
     } catch (error) {
-      message.error("Failed to generate quiz.");
-      console.error("Quiz generation error:", error);
+      message.error('Failed to generate quiz.');
+      console.error('Quiz generation error:', error);
     }
-  };  
+  };
+
   const handleSummarize = async () => {
     try {
       const noteId = location.pathname.split('/Dashboard/')[1].split('/')[0];
@@ -191,13 +202,14 @@ const MainLayout: React.FC = () => {
       setSummaryContent(response.data.summary);
       setSummaryVisible(true);
     } catch (error) {
-      message.error("Failed to generate summary.");
-      console.error("summary generation error:", error);
+      message.error('Failed to generate summary.');
+      console.error('Summary generation error:', error);
     }
-  };  
-  /* ─────────────── render ─────────────── */
+  };
+
   return (
     <div className="main-layout">
+      {/* Logout Confirmation */}
       <Modal
         title="Confirm Logout"
         open={isLogoutModalVisible}
@@ -209,6 +221,7 @@ const MainLayout: React.FC = () => {
         <p>Are you sure you want to log out?</p>
       </Modal>
 
+      {/* Create Note */}
       <Modal
         title="Create New Note"
         open={isModalVisible}
@@ -216,22 +229,36 @@ const MainLayout: React.FC = () => {
         footer={null}
       >
         <Form form={form} onFinish={handleCreate}>
-          <Form.Item name="title" rules={[{ required: true, message: 'Please enter a title' }]}>
+          <Form.Item
+            name="title"
+            rules={[{ required: true, message: 'Please enter a title' }]}
+          >
             <Input placeholder="Title" autoFocus />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">Create</Button>
+            <Button type="primary" htmlType="submit">
+              Create
+            </Button>
           </Form.Item>
         </Form>
       </Modal>
 
+      {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <div className="logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
+          <div
+            className="logo"
+            onClick={() => navigate('/dashboard')}
+            style={{ cursor: 'pointer' }}
+          >
             <img src={Logo} alt="Logo" className="sidebar-logo" />
           </div>
           <div className="search-container">
-            <div className={`search-input-wrapper ${isSearchVisible ? 'visible' : ''}`}>
+            <div
+              className={`search-input-wrapper ${
+                isSearchVisible ? 'visible' : ''
+              }`}
+            >
               <Input
                 placeholder="Search notes..."
                 value={searchQuery}
@@ -247,7 +274,10 @@ const MainLayout: React.FC = () => {
         </div>
 
         <div className="new-note-container">
-          <Button className="new-note-btn" onClick={() => setIsModalVisible(true)}>
+          <Button
+            className="new-note-btn"
+            onClick={() => setIsModalVisible(true)}
+          >
             <PlusOutlined /> New Note
           </Button>
         </div>
@@ -260,7 +290,9 @@ const MainLayout: React.FC = () => {
             (searchQuery ? filteredNotes : notes).map((n) => (
               <div
                 key={n._id}
-                className={`note-item ${location.pathname.includes(n._id) ? 'active' : ''}`}
+                className={`note-item ${
+                  location.pathname.includes(n._id) ? 'active' : ''
+                }`}
                 onClick={() => navigate(`/Dashboard/${n._id}/edit`)}
               >
                 <FileOutlined className="note-icon" />
@@ -275,15 +307,22 @@ const MainLayout: React.FC = () => {
               <DeleteOutlined className="note-icon" />
               <span>Trash</span>
             </div>
-            <div className="note-item" onClick={() => setIsSettingsVisible(true)}>
+            <div
+              className="note-item"
+              onClick={() => setIsSettingsVisible(true)}
+            >
               <SettingOutlined className="note-icon" />
               <span>Settings</span>
             </div>
           </div>
 
+          {/* AI Tools Section */}
           {isNoteEditorPage && aiTools && (
             <div className="ai-tools-section">
-              <div className="note-item ai-tool-item" onClick={handleTextToSpeech}>
+              <div
+                className="note-item ai-tool-item"
+                onClick={handleTextToSpeech}
+              >
                 <SoundOutlined className="note-icon" />
                 <span>Text-To-Speech</span>
               </div>
@@ -291,17 +330,36 @@ const MainLayout: React.FC = () => {
                 <SignatureOutlined className="note-icon" />
                 <span>Quiz-It</span>
               </div>
-              <div className="note-item ai-tool-item" onClick={handleSummarize}>
+              <div
+                className="note-item ai-tool-item"
+                onClick={handleSummarize}
+              >
                 <SolutionOutlined className="note-icon" />
                 <span>Summarize</span>
+              </div>
+
+              {/* Fourth AI tool button */}
+              <div
+                className="note-item ai-tool-item"
+                onClick={() => setNewToolVisible(true)}
+              >
+                <CodeOutlined className="note-icon" />
+                <span>Enhance Text</span>
               </div>
             </div>
           )}
 
-          <div className="collapse-sidebar" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+          <div
+            className="collapse-sidebar"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
-                d={sidebarCollapsed ? 'M9 18L15 12L9 6' : 'M15 18L9 12L15 6'}
+                d={
+                  sidebarCollapsed
+                    ? 'M9 18L15 12L9 6'
+                    : 'M15 18L9 12L15 6'
+                }
                 stroke="#4F4F4F"
                 strokeWidth="2"
                 strokeLinecap="round"
@@ -312,16 +370,19 @@ const MainLayout: React.FC = () => {
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="main-content">
         <Outlet />
       </div>
 
+      {/* Settings Modal */}
       <SettingsModal
         open={isSettingsVisible}
         onClose={() => setIsSettingsVisible(false)}
         onLogout={handleLogout}
       />
 
+      {/* Quiz-It Drawer */}
       <Drawer
         className="side-drawer"
         title="Quiz-It"
@@ -337,6 +398,7 @@ const MainLayout: React.FC = () => {
         </div>
       </Drawer>
 
+      {/* Summarize Drawer */}
       <Drawer
         className="side-drawer"
         title="Summarize"
@@ -350,6 +412,19 @@ const MainLayout: React.FC = () => {
         <div style={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
           {summaryContent || 'Generating summary...'}
         </div>
+      </Drawer>
+
+      {/* New Tool Drawer */}
+      <Drawer
+        className="side-drawer"
+        title="Enhance Text"
+        placement="right"
+        width="35vw"
+        open={isNewToolVisible}
+        onClose={() => setNewToolVisible(false)}
+        destroyOnClose
+      >
+        {/* TODO: Add New Tool functionality here */}
       </Drawer>
     </div>
   );
