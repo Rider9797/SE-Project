@@ -6,7 +6,7 @@ import {
 import { Button, Modal, Switch, Divider, Input, Form, message, Spin } from 'antd';
 import { useTheme } from '../contexts/ThemeContext';
 import { useFeatures } from '../contexts/FeatureFlags';
-import { authApi } from './api';                   // ← uses new instance
+import { authedApi } from './api';                  // ← uses new instance
 import '../styles/SettingsModal.css';
 
 type Tab = 'settings' | 'profile' | 'about' | 'help';
@@ -24,7 +24,7 @@ const SettingsModal: React.FC<Props> = ({ open, onClose, onLogout }) => {
   useEffect(() => {
     if (open && tab === 'profile') {
       setLoadingProf(true);
-      authApi
+      authedApi
         .get('/profile')
         .then(({ data }) => setProfile(data))
         .catch(() => message.error('Failed to load profile'))
@@ -35,7 +35,7 @@ const SettingsModal: React.FC<Props> = ({ open, onClose, onLogout }) => {
   /* ---------- Password change ---------- */
   const changePassword = async (vals: { current: string; next: string }) => {
     try {
-      await authApi.post('/change-password', vals);
+      await authedApi.post('/change-password', vals);
       message.success('Password updated');
     } catch {
       message.error('Current password incorrect');

@@ -83,18 +83,6 @@ def logout():
     response.delete_cookie(SESSION_COOKIE_NAME)
     return response
 
-@auth_routes.route('/profile', methods=['GET'])
-@jwt_required()
-def profile():
-    user_id = get_jwt_identity()
-    user = get_user_by_id(user_id)
-    if not user:
-        return jsonify({"msg": "Not found"}), 404
-    return jsonify({
-        "username": user['username'],
-        "email":    user['email']
-    }), 200
-
 @auth_routes.route('/change-password', methods=['POST'])
 @jwt_required()
 def change_password():
@@ -103,3 +91,12 @@ def change_password():
     if not update_password(user_id, data['current'], data['next']):
         return jsonify({"msg": "Current password incorrect"}), 400
     return jsonify({"msg": "Password updated"}), 200
+
+@auth_routes.route('/profile', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    current_user_id = get_jwt_identity()
+    user = get_user_by_id(current_user_id)
+    if user:
+        return jsonify(name=user['name'], username=user['username'], email=user['email'])
+    return jsonify(msg="User not found"), 404
