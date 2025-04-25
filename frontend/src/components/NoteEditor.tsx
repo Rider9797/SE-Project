@@ -13,12 +13,12 @@ import {
 } from '@ant-design/icons';
 import '../styles/NoteEditor.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { authedApi } from './api';
+import { authedApi, mediaApi } from './api';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 /* ---------- custom dark toolbar markup ---------- */
-const QuillToolbar = () => (
+const QuillToolbar = ({ onAddMultimedia }: { onAddMultimedia: () => void }) => (
   <div id="note-toolbar" className="custom-quill-toolbar">
     <select className="ql-header" defaultValue="0">
       <option value="0">Normal</option>
@@ -32,7 +32,7 @@ const QuillToolbar = () => (
     <button className="ql-list" value="ordered" />
     <button className="ql-list" value="bullet" />
     <button className="ql-clean" />
-    <button className="multimedia-btn">
+    <button className="multimedia-btn" onClick={onAddMultimedia} type="button">
       <span className="multimedia-icon">
         <img src="/media-icon.svg" alt="" />
       </span>
@@ -54,6 +54,7 @@ const formats = [
   'list',
   'bullet',
   'clean',
+  'image',
 ];
 
 const NoteEditor: React.FC = () => {
@@ -69,6 +70,7 @@ const NoteEditor: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [date] = useState(() => new Date().toLocaleDateString());
   const [tags] = useState(['Personal']);
 
@@ -80,6 +82,7 @@ const NoteEditor: React.FC = () => {
       try {
         setLoading(true);
         const response = await authedApi.get(`/notes/${id}`);
+        console.log('Fetched note response:', response.data); 
         setNote(response.data);
       } catch (error) {
         message.error('Failed to load note');
@@ -112,12 +115,6 @@ const NoteEditor: React.FC = () => {
   const handleTitleChange = (title: string) => {
     if (!note) return;
     setNote({ ...note, title });
-    debounceSave();
-  };
-
-  const handleContentChange = (content: string) => {
-    if (!note) return;
-    setNote({ ...note, content });
     debounceSave();
   };
 
@@ -167,11 +164,77 @@ const NoteEditor: React.FC = () => {
     }
   };
 
-  const handleAddMultimedia = () => {
-    message.info('Multimedia upload functionality coming soon');
-  };
+  // const handleAddMultimedia = () => {
+  //   message.info('Multimedia upload functionality coming soon');
+  // };
 
-  if (loading || !note) return <div>Loading…</div>;
+const fileInputRef = useRef<HTMLInputElement>(null);
+const quillRef = useRef<ReactQuill | null>(null);
+
+const handleAddMultimedia = () => {
+  if (fileInputRef.current) fileInputRef.current.click();
+};
+
+const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (!file || !id) {
+    console.log('Could not upload image: No file selected or note ID available.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('note_id', id);
+
+  try {
+    // Send to your backend upload endpoint
+    console.log("image uploading)")
+    const response = await mediaApi.post('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(progress);
+        } else {
+          // Handle the case where total is undefined, e.g., set progress to a generic loading state
+          console.log('Total upload size not available.');
+          setUploadProgress(50); // Or some other indicator
+        }
+      },
+
+    });
+
+    const imageUrl = response.data.url; // Example: https://yourdomain.com/uploads/img.png
+
+    const quillEditor = quillRef.current?.getEditor();
+    if (quillEditor && imageUrl) {
+      const range = quillEditor.getSelection();
+      if (range) {
+        quillEditor.insertEmbed(range.index, 'image', imageUrl);
+        message.success('Image uploaded!');
+      }
+    }
+    console.log("image uploaded")
+    message.success('Image uploaded!');
+
+  } catch (err) {
+    console.error(err);
+    message.error('Image upload failed.');
+  }
+};
+
+
+  // if (loading || !note) return <div>Loading…</div>;
+  if (loading) {
+    return <div>Loading…</div>;
+  }
+  
+  if (!note) {
+    return <div>Note not found.</div>;
+  }
 
   return (
     <div className="note-editor-container">
@@ -222,11 +285,23 @@ const NoteEditor: React.FC = () => {
       </div>
 
       <div className="note-content-area">
-        <QuillToolbar />
+      <QuillToolbar onAddMultimedia={handleAddMultimedia} />
+      <input
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        ref={fileInputRef}
+        onChange={handleFileChange}
+      />
         <ReactQuill
+          ref={(el) => (quillRef.current = el)}
           theme="snow"
-          value={note.content || ''}
-          onChange={handleContentChange}
+          // value={note.content || ''}
+          // onChange={handleContentChange}
+          value={note?.content || ''} // Renders text + <img> HTML
+          onChange={(value) => {
+          setNote(prev => prev ? { ...prev, content: value } : null);
+          }}
           modules={modules}
           formats={formats}
           placeholder="Start writing…"

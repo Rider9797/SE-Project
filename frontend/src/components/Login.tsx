@@ -3,13 +3,9 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-import LogoImage from "./assets/Frame.svg"; 
-=======
 import { setAuthToken } from '../utils/authorisation';
 import LogoImage from './assets/Frame.svg';
 import GoogleIcon from './assets/GoogleIcon.svg'; // Google icon SVG (unused right now)
->>>>>>> 1a57a20c7e96e191a5989bc28a466b1c9ac3ecbe
 
 const Login: React.FC = () => {
   const navigate = useNavigate();

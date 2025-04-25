@@ -25,6 +25,13 @@ export const searchApi = axios.create({
     
 });
 
+export const mediaApi = axios.create({
+    baseURL: 'http://127.0.0.1:5000/media',
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+});
+
 
 export const fetchNotes = async (token: string | null) => {
     try {
@@ -52,5 +59,5 @@ export const authApi = axios.create({
     baseURL: 'http://127.0.0.1:5000/auth',
     withCredentials: true,
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-  });
+});
   

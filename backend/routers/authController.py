@@ -50,7 +50,7 @@ def login():
     user_id = str(user["_id"])
 
     username = user["username"] 
-    access_token = create_access_token(identity=user_id, expires_delta=timedelta(minutes=15))
+    access_token = create_access_token(identity=user_id, expires_delta=timedelta(minutes=60))
     # Create a session in Redis
     session_id = os.urandom(16).hex()
     session_data = {
