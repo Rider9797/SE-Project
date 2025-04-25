@@ -4,8 +4,8 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background:var(--bg);
-  color:var(--fg);
+  background: var(--bg);
+  color: var(--fg);
   padding: 24px;
   overflow-y: auto;
 }
@@ -35,23 +35,24 @@
 .note-title-input.ant-input-focused {
   font-size: 32px;
   font-weight: 600;
-  color:var(--fg)!important;
+  color: var(--fg) !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   outline: 0 !important;
-  width: calc(100% - 150px); /* Increased space for action buttons */
-  padding: 0 !important;                    /* ← kill left indent  */
+  width: calc(100% - 150px);
+  padding: 0 !important;
 }
-.note-title-input::placeholder { color:var(--fg-muted) }
+.note-title-input::placeholder {
+  color: var(--fg-muted);
+}
 
-/* Action buttons container */
+/* ─── ACTION BUTTONS ─────────────────────────────────────── */
 .action-buttons {
   display: flex;
   gap: 10px;
 }
 
-/* Individual action buttons */
 .action-btn {
   background: transparent !important;
   border: none !important;
@@ -65,73 +66,59 @@
   border-radius: 4px;
   transition: color 0.3s, background-color 0.3s;
 }
-
 .action-btn:hover {
   color: #fff !important;
   background-color: rgba(255, 255, 255, 0.05) !important;
 }
+.save-btn:hover    { color: #52c41a !important; }
+.export-btn:hover  { color: #1890ff !important; }
+.delete-btn:hover  { color: #ff4d4f !important; }
 
-.save-btn:hover {
-  color: #52c41a !important;
-}
-
-.export-btn:hover {
-  color: #1890ff !important;
-}
-
-.delete-btn:hover {
-  color: #ff4d4f !important;
-}
-
-/* metadata rows */
-.meta-container{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+/* ─── METADATA ROWS ─────────────────────────────────────── */
+.meta-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 12px;
 }
-.meta-item{display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--fg-muted)}
-.meta-icon{color:var(--fg-muted);font-size:16px}
-.meta-label{color:var(--fg-muted);font-size:14px;width:40px}
-.meta-value{color:var(--fg);font-size:14px;font-weight:600}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--fg-muted);
+}
+.meta-icon  { color: var(--fg-muted); font-size: 16px; }
+.meta-label { color: var(--fg-muted); font-size: 14px; width: 40px; }
+.meta-value { color: var(--fg);       font-size: 14px; font-weight: 600; }
 
-/* ─── TAG STYLING ─────────────────────────────────────── */
+/* ─── TAG STYLING (added in 2nd file) ──────────────────── */
 .tag-container {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
-
 .edit-tag {
   background: var(--bg-soft) !important;
   border: 1px solid var(--fg-muted) !important;
   color: var(--fg) !important;
   border-radius: 4px;
   padding: 0 7px;
-  margin-right: 0;
-  font-weight: normal;
   display: flex;
   align-items: center;
 }
-
-/* Make tag close button (x) more visible on dark background */
 .edit-tag .anticon-close {
   color: var(--fg) !important;
   opacity: 0.65;
   transition: opacity 0.2s;
 }
-
 .edit-tag .anticon-close:hover {
-  color: var(--fg) !important;
   opacity: 1;
 }
-
-/* Specifically target the SVG path inside the close icon */
 .edit-tag .anticon-close svg {
   fill: var(--fg) !important;
 }
-
 .site-tag-plus {
   background: transparent !important;
   border: 1px dashed var(--fg-muted) !important;
@@ -141,16 +128,13 @@
   align-items: center;
   gap: 4px;
 }
-
 .site-tag-plus:hover {
   color: var(--fg) !important;
   border-color: var(--fg) !important;
 }
-
 .tag-input {
   width: 100px;
   height: 22px;
-  margin-right: 0;
   padding: 0 7px;
   background: var(--bg-soft) !important;
   color: var(--fg) !important;
@@ -158,7 +142,7 @@
 }
 
 /* ─── QUILL TOOLBAR ─────────────────────────────────────── */
-.custom-quill-toolbar{
+.custom-quill-toolbar {
   position: sticky;
   top: 0;
   z-index: 99;
@@ -170,7 +154,7 @@
   margin-bottom: 0;
 }
 
-/* Multimedia button styling with enhanced visual cues */
+/* Multimedia button (enhanced) */
 .multimedia-btn {
   display: flex;
   align-items: center;
@@ -188,91 +172,107 @@
   transition: all 0.2s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-
 .multimedia-btn:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2),
-              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
-
 .multimedia-btn:active {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.4);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
-
 .multimedia-icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* prettier rounded picker */
-.custom-quill-toolbar .ql-picker{
-  background:var(--bg-soft);color:var(--fg)
+/* picker styling (use CSS vars) */
+.custom-quill-toolbar .ql-picker {
+  background: var(--bg-soft);
+  color: var(--fg);
 }
-.custom-quill-toolbar .ql-picker-label{
-  color:var(--fg)!important;stroke:var(--fg);fill:var(--fg);
+.custom-quill-toolbar .ql-picker-label {
+  color: var(--fg) !important;
+  stroke: var(--fg);
+  fill: var(--fg);
 }
 .custom-quill-toolbar .ql-picker.ql-expanded .ql-picker-label,
-.custom-quill-toolbar .ql-picker-label:hover{
-  background:#2a2a2a;
+.custom-quill-toolbar .ql-picker-label:hover {
+  background: #2a2a2a;
 }
-
-/* dropdown list */
-.custom-quill-toolbar .ql-picker-options{
-  background:#181818;border:1px solid #2a2a2a;border-radius:6px;
+.custom-quill-toolbar .ql-picker-options {
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
 }
-.custom-quill-toolbar .ql-picker-item{color:#fff!important}
+.custom-quill-toolbar .ql-picker-item {
+  color: #fff !important;
+}
 .custom-quill-toolbar .ql-picker-item:hover,
-.custom-quill-toolbar .ql-picker-item.ql-selected{background:#2a2a2a}
+.custom-quill-toolbar .ql-picker-item.ql-selected {
+  background: #2a2a2a;
+}
 
-/* icons / strokes / fills → white */
+/* icons & strokes */
 .ql-toolbar button,
 .ql-toolbar .ql-stroke,
-.ql-toolbar .ql-fill{color:var(--fg)!important;stroke:var(--fg);fill:var(--fg)}
-
-/* ─── EDITOR AREA ───────────────────────────────────────── */
-.note-content-area{
-  flex: 1;
-  overflow-y: auto;
-  padding-top: 12px;
+.ql-toolbar .ql-fill {
+  color: var(--fg) !important;
+  stroke: var(--fg);
+  fill: var(--fg);
 }
 
-/* Quill skeleton */
-.note-content-area .ql-toolbar.ql-snow{border:none;background:transparent}
-.note-content-area .ql-container.ql-snow{
-  border:none;
-  background:transparent;
-}
-
-/* main text area + placeholder */
-.note-content-area .ql-editor{
-  color:var(--fg);font-size:16px;line-height:1.6;
-  min-height:500px;padding:12px 0 0;       /* left padding 0 → text flush */
-}
-.note-content-area .ql-editor.ql-blank::before{
-  color:var(--fg-muted);              /* light-grey placeholder */
-  left:0!important;                        /* align with text        */
-  padding-left:0!important;
-  font-style:italic;
-}
-.note-content-area .ql-editor:focus{outline:none}
-
-/* ── force Quill dropdown panel to dark globally ───────── */
-.ql-snow .ql-picker-options{
-  background:var(--bg)!important;border-radius:6px
-}
-.ql-snow .ql-picker-item{
-  color:var(--fg)!important;background:transparent!important
-}
-.ql-snow .ql-picker-item:hover,
-.ql-snow .ql-picker-item.ql-selected{background:#2a2a2a!important}
-
+/* extra toolbar tweaks */
 .custom-quill-toolbar.ql-toolbar.ql-snow {
   border-left: 0 !important;
   border-right: 0 !important;
   padding-bottom: 22px !important;
   border-top: 0 !important;
+}
+
+/* ─── EDITOR AREA ───────────────────────────────────────── */
+.note-content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 12px;
+}
+.note-content-area .ql-toolbar.ql-snow {
+  border: none;
+  background: transparent;
+}
+.note-content-area .ql-container.ql-snow {
+  border: none;
+  background: transparent;
+}
+.note-content-area .ql-editor {
+  color: var(--fg);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 500px;
+  padding: 12px 0 0;
+}
+.note-content-area .ql-editor.ql-blank::before {
+  color: var(--fg-muted);
+  left: 0 !important;
+  padding-left: 0 !important;
+  font-style: italic;
+}
+.note-content-area .ql-editor:focus {
+  outline: none;
+}
+
+/* ── force Quill dropdown panel to dark globally ───────── */
+.ql-snow .ql-picker-options {
+  background: var(--bg) !important;
+  border-radius: 6px;
+}
+.ql-snow .ql-picker-item {
+  color: var(--fg) !important;
+  background: transparent !important;
+}
+.ql-snow .ql-picker-item:hover,
+.ql-snow .ql-picker-item.ql-selected {
+  background: #2a2a2a !important;
 }

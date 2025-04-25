@@ -41,8 +41,11 @@ const MainLayout: React.FC = () => {
   const [isSummaryVisible, setSummaryVisible] = useState(false);
   const [isNewToolVisible, setNewToolVisible] = useState(false);
   const [isTrashModalVisible, setIsTrashModalVisible] = useState(false);
+  const [isEnhanceModalVisible, setIsEnhanceModalVisible] = useState(false);
   const [quizContent, setQuizContent] = useState('');
   const [summaryContent, setSummaryContent] = useState('');
+  const [enhancePrompt, setEnhancePrompt] = useState('');
+  const [enhanceResult, setEnhanceResult] = useState('');
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -257,6 +260,24 @@ const MainLayout: React.FC = () => {
     }
   };
 
+  const handleEnhanceText = async () => {
+    try {
+      const noteId = location.pathname.split('/Dashboard/')[1].split('/')[0];
+      message.loading({ content: 'Enhancing...', key: 'enhance' });
+  
+      const { data } = await authedApi.post(`/notes/${noteId}/prompt_enhance`, {
+        prompt: enhancePrompt,
+      });
+  
+      setEnhanceResult(data.result); // Set result to show in drawer
+      message.success({ content: 'Enhancement complete!', key: 'enhance' });
+    } catch (error) {
+      console.error(error);
+      setEnhanceResult('Enhancement failed. Please try again.');
+      message.error({ content: 'Enhancement failed', key: 'enhance' });
+    }
+  };
+
   // Format date utility function
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -342,6 +363,56 @@ const MainLayout: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Enhance Text Modal */}
+      <Modal
+        title="Enhance Text"
+        open={isEnhanceModalVisible}
+        onCancel={() => setIsEnhanceModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsEnhanceModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button
+            key="ok"
+            type="primary"
+            onClick={async () => {
+              try {
+                const noteId = location.pathname.split('/Dashboard/')[1].split('/')[0];
+                message.loading({ content: 'Enhancing...', key: 'enhance' });
+
+                const { data } = await authedApi.post(`/notes/${noteId}/prompt_enhance`, {
+                  prompt: enhancePrompt,
+                });
+
+                // Emit an event or store the enhanced result in state if needed
+                message.success({ content: 'Note enhanced!', key: 'enhance' });
+
+                // Optional: Reload note content after enhancing (if not using local state)
+                setEnhanceResult(data.result);
+                setNewToolVisible(true);
+
+              } catch (error) {
+                console.error(error);
+                message.error({ content: 'Enhancement failed', key: 'enhance' });
+              } finally {
+                setIsEnhanceModalVisible(false);
+                setEnhancePrompt('');
+              }
+            }}
+          >
+            Enhance
+          </Button>,
+        ]}
+      >
+        <p>Write a prompt or request for AI to improve this note.</p>
+        <Input.TextArea
+          rows={4}
+          placeholder="e.g. Make this more concise and formal..."
+          value={enhancePrompt}
+          onChange={(e) => setEnhancePrompt(e.target.value)}
+        />
       </Modal>
 
       {/* Trash Modal */}
@@ -472,7 +543,7 @@ const MainLayout: React.FC = () => {
               {/* Fourth AI tool button */}
               <div
                 className="note-item ai-tool-item"
-                onClick={() => setNewToolVisible(true)}
+                onClick={() => setIsEnhanceModalVisible(true)}
               >
                 <CodeOutlined className="note-icon" />
                 <span>Enhance Text</span>
@@ -532,7 +603,7 @@ const MainLayout: React.FC = () => {
       {/* Summarize Drawer */}
       <Drawer
         className="side-drawer"
-        title="Summarize"
+        title="Summary"
         placement="right"
         width="35vw"
         open={isSummaryVisible}
@@ -545,17 +616,42 @@ const MainLayout: React.FC = () => {
         </div>
       </Drawer>
 
-      {/* New Tool Drawer */}
+      {/* Enhance Text Drawer */}
       <Drawer
         className="side-drawer"
         title="Enhance Text"
         placement="right"
         width="35vw"
         open={isNewToolVisible}
-        onClose={() => setNewToolVisible(false)}
+        onClose={() => {
+          setNewToolVisible(false);
+          setEnhancePrompt('');
+          setEnhanceResult('');
+        }}
         destroyOnClose
       >
-        {/* TODO: Add New Tool functionality here */}
+        <div style={{ marginBottom: 12 }}>
+          <p style={{ marginBottom: 4 }}>Describe how you want the note to be enhanced:</p>
+          <Input.TextArea
+            rows={3}
+            placeholder="e.g. Make this more concise and formal…"
+            value={enhancePrompt}
+            onChange={(e) => setEnhancePrompt(e.target.value)}
+          />
+          <Button
+            type="primary"
+            style={{ marginTop: 8 }}
+            onClick={handleEnhanceText}
+            disabled={!enhancePrompt.trim()}
+          >
+            Enhance
+          </Button>
+        </div>
+
+        {/* Result display */}
+        <div style={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace', marginTop: 20 }}>
+          {enhanceResult || 'Your enhanced content will appear here...'}
+        </div>
       </Drawer>
     </div>
   );

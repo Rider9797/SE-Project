@@ -360,7 +360,9 @@ html, body { background: var(--bg); }
 .sidebar.collapsed .note-item span,
 .sidebar.collapsed .more-section,
 .sidebar.collapsed .tools-section-header,
-.sidebar.collapsed .ai-tool-item span {
+.sidebar.collapsed .ai-tool-item span,
+.sidebar.collapsed .new-note-container,
+.sidebar.collapsed .note-list-footer {
   display: none;
 }
 

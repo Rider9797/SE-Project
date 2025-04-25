@@ -199,7 +199,7 @@ def get_pdf_summary(note_id):
     try:
         print("Note content:", note.get('content', 'No content available'))
 
-        prompt = f"Summarize this note in a fun way yipeeee:\n\n{note['content']}"
+        prompt = f"Summarize this note :\n\n{note['content']}"
         response = model.generate_content(prompt)
         summary = response.text
         print("Generated summary:", summary)

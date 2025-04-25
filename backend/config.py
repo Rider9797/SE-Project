@@ -1,11 +1,11 @@
-
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 import redis
 import os
-
+import gridfs
 load_dotenv()
+
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 MONGO_URI = os.getenv("MONGO_URI")
@@ -32,7 +32,8 @@ db = client["note_taking_db"]
 notes_collection = db["notes"]
 users_collection = db["users"]
 summary_collection = db["summary"]
-
+media_collection = db["media"]
+media_fs = gridfs.GridFS(db)
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
 
 
