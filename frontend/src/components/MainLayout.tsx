@@ -35,6 +35,8 @@ const MainLayout: React.FC = () => {
   // NEW drawers
   const [isQuizVisible, setQuizVisible] = useState(false);
   const [isSummaryVisible, setSummaryVisible] = useState(false);
+  const [quizContent, setQuizContent] = useState('');
+  const [summaryContent, setSummaryContent] = useState('');
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -154,10 +156,47 @@ const MainLayout: React.FC = () => {
   };
 
   /* ───────────── AI tools ───────────── */
-  const handleTextToSpeech = () => message.info('Text-to-Speech feature coming soon');
-  const handleQuizIt = () => setQuizVisible(true);
-  const handleSummarize = () => setSummaryVisible(true);
-
+  const handleTextToSpeech = async () => {
+    try {
+      const noteId = location.pathname.split('/Dashboard/')[1].split('/')[0];
+      const response = await authedApi.get(`/notes/${noteId}/tts`, {
+        responseType: 'blob',
+      });
+  
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `note_${noteId}.MP3`); // 👈 ensure lowercase .mp3
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      message.error('Failed to download text-to-speech audio.');
+      console.error('TTS error:', error);
+    }
+  };
+  const handleQuizIt = async () => {
+    try {
+      const noteId = location.pathname.split('/Dashboard/')[1].split('/')[0];
+      const response = await authedApi.get(`/notes/${noteId}/quiz`);
+      setQuizContent(response.data.quiz);
+      setQuizVisible(true);
+    } catch (error) {
+      message.error("Failed to generate quiz.");
+      console.error("Quiz generation error:", error);
+    }
+  };  
+  const handleSummarize = async () => {
+    try {
+      const noteId = location.pathname.split('/Dashboard/')[1].split('/')[0];
+      const response = await authedApi.get(`/notes/${noteId}/summary`);
+      setSummaryContent(response.data.summary);
+      setSummaryVisible(true);
+    } catch (error) {
+      message.error("Failed to generate summary.");
+      console.error("summary generation error:", error);
+    }
+  };  
   /* ─────────────── render ─────────────── */
   return (
     <div className="main-layout">
@@ -314,6 +353,9 @@ const MainLayout: React.FC = () => {
         destroyOnClose
       >
         {/* TODO: Quiz-It UI */}
+        <div style={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+          {quizContent || 'Generating quiz...'}
+        </div>
       </Drawer>
 
       {/* ─── Summarize drawer ─── */}
@@ -327,6 +369,9 @@ const MainLayout: React.FC = () => {
         destroyOnClose
       >
         {/* TODO: Summarize UI */}
+        <div style={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+          {summaryContent || 'Generating summary...'}
+        </div>
       </Drawer>
     </div>
   );

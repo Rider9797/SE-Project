@@ -44,6 +44,11 @@ interface Note {
   content: string;
   created_at: string;
   tags?: string[];
+  ai_tag?: {
+    main_subject?: string;
+    overarching_scheme?: string;
+    sub_topic?: string;
+  };
 }
 
 /* ────────────────────────────────────────────────────────── */
@@ -108,11 +113,30 @@ const NoteEditor: React.FC = () => {
   /* ---------- manual save / delete ---------- */
   const handleManualSave = async () => {
     if (!note) return;
+
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     try {
       message.loading({ content: 'Saving…', key: 'saveNote' });
       await authedApi.put(`/notes/${id}`, { title: note.title, content: note.content });
       message.success({ content: 'Note saved!', key: 'saveNote' });
+      await authedApi.post(`/notes/${id}/autotag`);
+      message.success({ content: 'AI Tags generated!', key: 'autoTag' });
+
+      // Fetch updated tags
+      const { data } = await authedApi.get(`/notes/${id}/gettags`);
+      const { main_subject, overarching_scheme, sub_topic } = data.tags;
+      setNote((prevNote) =>
+        prevNote
+          ? {
+              ...prevNote,
+              ai_tag: { main_subject, overarching_scheme, sub_topic },
+            }
+          : prevNote
+      );
+
+
+    message.success({ content: 'Note saved with updated tags!', key: 'saveNote' });
+
     } catch {
       message.error({ content: 'Failed to save', key: 'saveNote' });
     }
@@ -170,7 +194,11 @@ const NoteEditor: React.FC = () => {
   if (loading || !note) return <div className="note-loading">Loading…</div>;
 
   const createdDate = new Date(note.created_at).toLocaleDateString();
-  const tagString = note.tags?.join(', ') || '—';
+  const tagString = note.ai_tag
+  ? Object.values(note.ai_tag).filter(Boolean).join(', ')
+  : '—';
+
+
 
   return (
     <div className="note-editor-container">
