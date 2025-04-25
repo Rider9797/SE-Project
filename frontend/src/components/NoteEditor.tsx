@@ -199,9 +199,12 @@ const NoteEditor: React.FC = () => {
     }
   };
 
+
+
   const handleAddMultimedia = () => {
     if (fileInputRef.current) fileInputRef.current.click();
   };
+
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
