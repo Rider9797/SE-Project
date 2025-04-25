@@ -15,8 +15,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
 
 
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173","supports_credentials": True}})
-
+CORS(app, resources={r"/*": {"origins": "https://se-project-chi.vercel.app"}}, supports_credentials=True)
 jwt = JWTManager(app)
 
 app.register_blueprint(auth_routes, url_prefix='/auth')
