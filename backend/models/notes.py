@@ -158,30 +158,7 @@ def get_markdown_note(note_id):
     return response
 
 
-# def get_pdf_summary(note_id):
-#     print(f"Fetching note for summary: {note_id}")
 
-#     note = notes_collection.find_one({
-#         "_id": ObjectId(note_id),
-#         "deleted_at": None
-#     })
-
-#     if not note:
-#         print("Note not found for summary")
-#         return jsonify({"msg": "Note not found or deleted"}), 404
-
-#     try:
-#         print("Note content:", note.get('content', 'No content available'))
-
-#         prompt = f"Summarize this note:\n\n{note['content']}"
-#         response = model.generate_content(prompt)
-#         summary = response.text
-#         print("Generated summary:", summary)
-#     except Exception as e:
-#         print(f"Gemini summary error: {e}")
-#         return jsonify({"msg": f"Error generating summary: {str(e)}"}), 500
-
-#     return jsonify({"summary": summary}), 200
 
 
 def get_pdf_summary(note_id):
@@ -262,40 +239,7 @@ from bson.objectid import ObjectId
 
 from config import notes_collection  # Assuming you have this set up
 
-# def text_to_speech(note_id):
-#     try:
-#         # Fetch the note from the database
-#         note = notes_collection.find_one({
-#             "_id": ObjectId(note_id),
-#             "deleted_at": None
-#         })
 
-#         if not note:
-#             print("Note not found!")
-#             return jsonify({"msg": "Note not found or deleted"}), 404
-
-#         # Extract note content
-#         note_content = note.get('content', 'No content available')
-#         print(f"Note content: {note_content}")
-
-#         # Generate speech
-#         tts = gTTS(text=note_content, lang='en')
-#         mp3_output = BytesIO()
-#         tts.write_to_fp(mp3_output)
-#         mp3_output.seek(0)
-
-#         # Return as downloadable MP3 file
-#         print("here")
-#         return send_file(
-#             mp3_output,
-#             mimetype='audio/mpeg',
-#             as_attachment=True,
-#             download_name=f"note_{note_id}.mp3"
-#         )
-
-#     except Exception as e:
-#         print(f"Error generating speech: {e}")
-#         return jsonify({"msg": f"Error generating speech: {str(e)}"}), 500
     
 import asyncio
 from io import BytesIO
@@ -384,10 +328,6 @@ from flask import jsonify
 from config import notes_collection
 from bs4 import BeautifulSoup
 
-# Reuse your existing Gemini model and clean text function
-# from your setup:
-# - `model = genai.GenerativeModel(...)`
-# - `extract_clean_text(...)`
 
 def autotag_note(note_id):
     print(f"Auto-tagging note: {note_id}")
