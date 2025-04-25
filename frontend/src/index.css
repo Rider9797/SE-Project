@@ -1,6 +1,20 @@
 /* index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
+:root[data-theme='dark'] {
+  --bg: #181818;
+  --bg-soft: #202020;
+  --fg: #ffffff;
+  --fg-muted: rgba(255, 255, 255, 0.6);
+}
+
+:root[data-theme='light'] {
+  --bg: #f5f5f5;        /* light, but not stark white */
+  --bg-soft: #ffffff;
+  --fg: #1a1a1a;
+  --fg-muted: #4d4d4d;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -318,3 +332,51 @@ body {
 
 
 */
+
+.custom-input.ant-input-affix-wrapper input.ant-input {
+  color: #535353 !important;      /* dark-grey text            */
+  font-weight: 500 !important;    /* makes it bold (same as email) */
+}
+/* ─── Unified placeholder colour for email + password ───────────────── */
+.custom-input::placeholder,                                   /* plain <Input>   */
+.custom-input.ant-input-affix-wrapper input::placeholder,     /* inner <input>   */
+.custom-input .ant-input::placeholder {                       /* fallback        */
+  color: #535353 !important;   /* ← new grey */
+  font-weight: 500;            /* matches rest of typography */
+  opacity: 1;                  /* ensure full opacity */
+}
+/* ─── Make password field 48 px tall and prevent clipping ─────────────── */
+
+/* 1 ▸ the wrapper around <Input.Password> */
+.custom-input.ant-input-affix-wrapper {
+  min-height: 40px !important;
+  height: 41px !important;
+  padding: 0 16px !important;   /* keep horizontal padding */
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* 2 ▸ the actual <input> element inside the wrapper */
+.custom-input.ant-input-affix-wrapper input.ant-input {
+  height: 100% !important;      /* fill the 48 px wrapper */
+  line-height: 24px !important; /* comfortable text box   */
+  padding: 0 !important;        /* no extra top/bottom    */
+}
+/* --------------------------------------------------
+   Override Chrome / Edge autofill colour
+---------------------------------------------------*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+.custom-input.ant-input-affix-wrapper input:-webkit-autofill {
+  /* repaint the background with the normal input colour */
+  -webkit-box-shadow: 0 0 0 1000px var(--clr-text-primary) inset !important;
+          box-shadow: 0 0 0 1000px var(--clr-text-primary) inset !important;
+
+  /* keep the same text colour & weight you use elsewhere */
+  -webkit-text-fill-color: var(--clr-text-placeholder) !important;
+  font-weight: 500 !important;
+
+  /* stop the blue flash that can appear for a split-second */
+  transition: background-color 600000s 0s, color 600000s 0s;
+}

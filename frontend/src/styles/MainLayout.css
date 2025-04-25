@@ -1,6 +1,10 @@
 /* styles/MainLayout.css */
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap');
-
+html, body { background: #181818; }
+/* prevent white behind the rounded inside edge */.side-drawer .ant-drawer-content-wrapper,
+.side-drawer .ant-drawer-wrapper-body {
+  background:#181818 !important;
+}
 /* Main Layout */
 .main-layout {
   display: flex;
@@ -575,3 +579,36 @@
 .ant-form-item-label > label {
   color: rgba(255, 255, 255, 0.85) !important;
 }
+/* ───── Slide-and-bounce for right drawer ───── */
+@keyframes drawerBounce {
+  0%   { transform: translateX(100%); }
+  80%  { transform: translateX(-8%);  }  /* overshoot left   */
+  92%  { transform: translateX(4%);   }  /* whip back right  */
+  100% { transform: translateX(0);    }
+}
+
+/* apply the animation once the drawer’s “open” class appears */
+.side-drawer.ant-drawer-open .ant-drawer-content-wrapper {
+  animation: drawerBounce 0.55s
+             cubic-bezier(0.25, 1.5, 0.5, 1)   /* springy curve  */
+             forwards !important;               /* beat inline    */
+}
+
+/* dark styling + rounded inside edge (unchanged) */
+.side-drawer .ant-drawer-content,
+.side-drawer .ant-drawer-header,
+.side-drawer .ant-drawer-body {
+  background: #181818 !important;
+  color: #ffffff !important;
+}
+.side-drawer .ant-drawer-content { border-radius: 20px 0 0 20px; }
+
+/* centre + enlarge header text */
+.side-drawer .ant-drawer-header { display: flex; }
+.side-drawer .ant-drawer-title  {
+  flex: 1;
+  text-align: center;
+  font-size: 28px;   /* bigger title */
+  font-weight: 600;
+}
+.side-drawer .ant-drawer-close  { color: #ffffff !important; }

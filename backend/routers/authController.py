@@ -4,9 +4,9 @@ import redis
 import os
 from datetime import timedelta
 from flask import Blueprint, request, jsonify, make_response, redirect
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 # from flask_login import login_user
-from models.users import create_user, verify_user
+from models.users import create_user, verify_user, get_user_by_id, update_password 
 from config import redis_client
 import logging
 
@@ -50,7 +50,7 @@ def login():
     user_id = str(user["_id"])
 
     username = user["username"] 
-    access_token = create_access_token(identity=user_id, expires_delta=timedelta(minutes=15))
+    access_token = create_access_token(identity=user_id, expires_delta=timedelta(minutes=60))
     # Create a session in Redis
     session_id = os.urandom(16).hex()
     session_data = {
@@ -82,3 +82,24 @@ def logout():
     response = make_response(jsonify({"msg": "Logged out successfully"}), 200)
     response.delete_cookie(SESSION_COOKIE_NAME)
     return response
+
+@auth_routes.route('/profile', methods=['GET'])
+@jwt_required()
+def profile():
+    user_id = get_jwt_identity()
+    user = get_user_by_id(user_id)
+    if not user:
+        return jsonify({"msg": "Not found"}), 404
+    return jsonify({
+        "username": user['username'],
+        "email":    user['email']
+    }), 200
+
+@auth_routes.route('/change-password', methods=['POST'])
+@jwt_required()
+def change_password():
+    user_id = get_jwt_identity()
+    data = request.json
+    if not update_password(user_id, data['current'], data['next']):
+        return jsonify({"msg": "Current password incorrect"}), 400
+    return jsonify({"msg": "Password updated"}), 200

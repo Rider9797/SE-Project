@@ -114,9 +114,7 @@ def allowed_file(fn: str) -> bool:
     return "." in fn and fn.rsplit(".",1)[1].lower() in ALLOWED_EXT
 
 @media_routes.route("/upload", methods=["POST"])
-@jwt_required()
 def upload_media_to_note():
-    user_id = get_jwt_identity()
     file = request.files.get("file")
     note_id = request.form.get("note_id")
 
@@ -127,7 +125,7 @@ def upload_media_to_note():
     meta = save_media_to_gridfs(file.stream, filename, file.content_type, note_id)
 
     img_url = url_for("media_routes.serve_media", media_id=meta["media_id"], _external=True)
-    img_tag = f'<img src="{img_url}" alt="{filename}" style="max-width:100%;"/>'
+    img_tag = f'<img src="{img_url}" alt="{filename}" style="max-width: 300px; max-height: 300px; object-fit: contain; display: block; margin: 10px auto;"/>'
 
     note = get_note_by_id(note_id)
     if not note:

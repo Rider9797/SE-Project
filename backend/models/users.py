@@ -28,3 +28,16 @@ def verify_user(email, password):
     if user and check_password_hash(user["password"], password):
         return user
     return None
+
+def get_user_by_id(uid):
+    return users_collection.find_one({"_id": ObjectId(uid)})
+
+def update_password(uid, current_pw, new_pw):
+    user = get_user_by_id(uid)
+    if not user or not check_password_hash(user["password"], current_pw):
+        return False
+    users_collection.update_one(
+        {"_id": ObjectId(uid)},
+        {"$set": {"password": generate_password_hash(new_pw)}}
+    )
+    return True
