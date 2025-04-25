@@ -1,164 +1,188 @@
-/* components/NoteEditor.css */
+/* ─── LAYOUT ─────────────────────────────────────────────── */
 .note-editor-container {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background-color: #181818;
+  background: #181818;
   color: #fff;
   padding: 24px;
   overflow-y: auto;
 }
 
-/* Header section with title and metadata */
-.note-editor-header {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
+/* ─── HEADER (title + meta) ─────────────────────────────── */
+.note-editor-header { margin-bottom: 12px; }
 
 .title-and-more {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
-.note-title-input {
+/* title field now flush-left, no inner padding */
+.note-title-input,
+.note-title-input:hover,
+.note-title-input:focus,
+.note-title-input.ant-input,
+.note-title-input.ant-input-focused {
   font-size: 32px;
   font-weight: 600;
-  color: #FFF !important;
+  color: #fff !important;
   background: transparent !important;
-  padding: 0;
-  border: none;
-  margin-bottom: 0;
-  width: calc(100% - 50px);
+  border: none !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  width: calc(100% - 150px); /* Increased space for action buttons */
+  padding: 0 !important;                    /* ← kill left indent  */
+}
+.note-title-input::placeholder { color: rgba(255,255,255,.6); }
+
+/* Action buttons container */
+.action-buttons {
+  display: flex;
+  gap: 10px;
 }
 
-.note-title-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.more-options-btn {
+/* Individual action buttons */
+.action-btn {
   background: transparent !important;
   border: none !important;
   color: #6F6F6F !important;
-  font-size: 20px;
-  padding: 0;
+  font-size: 18px;
   height: 32px;
   width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.more-options-btn:hover {
-  color: #FFF !important;
-}
-
-/* Metadata container with vertical layout */
-.meta-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.meta-icon {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
-}
-
-.meta-label {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  width: 40px;
-}
-
-.meta-value {
-  color: #FFF;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* Toolbar section */
-.note-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 16px;
-  margin-bottom: 24px;
-}
-
-.toolbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.format-button {
-  background: transparent !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #FFF !important;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 12px;
   border-radius: 4px;
+  transition: color 0.3s, background-color 0.3s;
 }
 
-.dropdown-arrow {
-  font-size: 10px;
-  margin-left: 4px;
+.action-btn:hover {
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
-.format-actions {
-  display: flex;
-  gap: 8px;
+.save-btn:hover {
+  color: #52c41a !important;
 }
 
-.icon-button {
-  background: transparent !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #FFF !important;
-  width: 32px;
-  height: 32px;
+.export-btn:hover {
+  color: #1890ff !important;
+}
+
+.delete-btn:hover {
+  color: #ff4d4f !important;
+}
+
+/* metadata rows */
+.meta-container{display:flex;flex-direction:column;gap:12px}
+.meta-item{display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.1)}
+.meta-icon{color:rgba(255,255,255,.6);font-size:16px}
+.meta-label{color:rgba(255,255,255,.6);font-size:14px;width:40px}
+.meta-value{color:#fff;font-size:14px;font-weight:600}
+
+/* ─── ANT dropdown (three-dot menu) ─────────────────────── */
+.note-dropdown .ant-dropdown-menu{
+  background:#181818;border:1px solid #2a2a2a;color:#fff
+}
+.note-dropdown .ant-dropdown-menu-item,
+.note-dropdown .ant-dropdown-menu-item>span{color:#fff}
+.note-dropdown .ant-dropdown-menu-item:hover{background:#2a2a2a}
+
+/* ─── QUILL TOOLBAR ─────────────────────────────────────── */
+.custom-quill-toolbar{
+  display:flex;gap:12px;align-items:center;
+  padding:6px 0;margin-bottom:16px;
+  border-top:1px solid rgba(255,255,255,.1);
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+/* Add Multimedia button */
+/* Multimedia button styling */
+.multimedia-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 4px;
-}
-
-/* Content area */
-.note-content-area {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.note-content {
-  width: 100%;
-  height: 100%;
-  min-height: 300px;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
   background: transparent;
-  border: none;
-  color: #FFF;
-  font-size: 16px;
-  line-height: 1.6;
-  resize: none;
-  padding: 0;
-  font-family: 'Source Sans Pro', sans-serif;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.note-content:focus {
-  outline: none;
+.multimedia-btn:hover {
+  background: #2a2a2a;
+  border-color: rgba(255,255,255,.5);
 }
+
+.multimedia-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* prettier rounded picker */
+.custom-quill-toolbar .ql-picker{
+  background:#202020;                       /* softer than pure black */
+  border:1px solid #2a2a2a!important;
+  border-radius:6px;                        /* rounded corners */
+  color:#fff;
+}
+.custom-quill-toolbar .ql-picker-label{
+  color:#fff!important;padding:4px 12px;border:none!important;
+}
+.custom-quill-toolbar .ql-picker.ql-expanded .ql-picker-label,
+.custom-quill-toolbar .ql-picker-label:hover{
+  background:#2a2a2a;
+}
+
+/* dropdown list */
+.custom-quill-toolbar .ql-picker-options{
+  background:#181818;border:1px solid #2a2a2a;border-radius:6px;
+}
+.custom-quill-toolbar .ql-picker-item{color:#fff!important}
+.custom-quill-toolbar .ql-picker-item:hover,
+.custom-quill-toolbar .ql-picker-item.ql-selected{background:#2a2a2a}
+
+/* icons / strokes / fills → white */
+.ql-toolbar button,
+.ql-toolbar .ql-stroke,
+.ql-toolbar .ql-fill{color:#fff;stroke:#fff;fill:#fff}
+
+/* ─── EDITOR AREA ───────────────────────────────────────── */
+.note-content-area{flex:1;overflow-y:auto}
+
+/* Quill skeleton */
+.note-content-area .ql-toolbar.ql-snow{border:none;background:transparent}
+.note-content-area .ql-container.ql-snow{
+  border:none;border-top:1px solid rgba(255,255,255,.1);background:transparent
+}
+
+/* main text area + placeholder */
+.note-content-area .ql-editor{
+  color:#fff;font-size:16px;line-height:1.6;
+  min-height:500px;padding:12px 0 0;       /* left padding 0 → text flush */
+}
+.note-content-area .ql-editor.ql-blank::before{
+  color:rgba(255,255,255,.4);              /* light-grey placeholder */
+  left:0!important;                        /* align with text        */
+  padding-left:0!important;
+  font-style:italic;
+}
+.note-content-area .ql-editor:focus{outline:none}
+
+/* ── force Quill dropdown panel to dark globally ───────── */
+.ql-snow .ql-picker-options{
+  background:#181818!important;border:1px solid #2a2a2a!important;border-radius:6px
+}
+.ql-snow .ql-picker-item{
+  color:#fff!important;background:transparent!important
+}
+.ql-snow .ql-picker-item:hover,
+.ql-snow .ql-picker-item.ql-selected{background:#2a2a2a!important}
