@@ -18,6 +18,21 @@ This project was made for our Software Engineering course. Here are developers w
   * Summarize: Condense long notes into key points with one click.
   * Quiz It: Automatically generate a quiz based on your note's content.
     
+## Tech Stack
+
+**Frontend**
+* React with TypeScript
+* Build Tool: Vite
+* Styling: CSS/Tailwind
+
+**Backend**
+* Language: Python
+* Framework: Flask
+* API calls to OpenAI's Whipser and ChatGPT
+
+**Database**
+* MongoDB Atlas
+* 
 
 
 
