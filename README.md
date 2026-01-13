@@ -4,19 +4,37 @@ NoteGenius is a full-stack web application that elevates note-taking with AI. Wh
 
 This project was made for our Software Engineering course. Here are developers who worked on this:
 * **Muhammad Rayed** - [Rider9797](https://github.com/Rider9797)
-* **Aleena Abbas** - [
+* **Aleena Abbas** - 
 * **Tayyab Haider** - 
 * **Abubakar Minhas** - [AbubakarMin1](https://github.com/AbubakarMin1)
 * **Hammad Yousaf** - [HammadYousaf](https://github.com/HammadYousaf-26100387)
 
 ## Features
+
 * **Full CRUD Operations**: Create, read, update, and delete your notes.
-* **User Authentication**: User signup and login system.
+  
+<img width="1884" height="918" alt="image" src="https://github.com/user-attachments/assets/3772b481-6d62-4839-95cc-cedf3176b7cc" />
+
+
 * **AI Powered Features**: 
   * Enhance Text: Provide a prompt to rephrase, beautify, or organize your content automatically.
   * Text-to-Speech: Generate an audio file that reads out your notes to you (uses an API call to OpenAI's whiper model).
   * Summarize: Condense long notes into key points with one click.
   * Quiz It: Automatically generate a quiz based on your note's content.
+    
+
+<img width="1900" height="900" alt="image" src="https://github.com/user-attachments/assets/00003d75-974a-4117-b079-29fb627be9db" />
+
+
+* **User Authentication**: User signup and login system.
+  
+  <img width="1900" height="907" alt="image" src="https://github.com/user-attachments/assets/950fa501-c12e-43c0-b61e-6543d51547ce" />
+
+
+
+
+
+
     
 ## Tech Stack
 
@@ -58,16 +76,19 @@ python generate_env.py
 
 ```
 
-* In generate_env.py, assign your mongodb connection string to the variable `MONGO_URI`
+* In generate_env.py, assign your mongodb connection string to the variable `MONGO_URI` in the function `create_env_file()`
 * Make sure `redis-server.exe` is running
 
 **Frontend Setup**
+
 In a new terminal, enter the following commands:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+
+
 
 
 
