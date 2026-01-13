@@ -37,13 +37,42 @@ This project was made for our Software Engineering course. Here are developers w
 **Prerequisties**:
 * Node.js & npm
 * MongoDB Atlas Account
+* Active MongoDB IP Address
 * Redis Server (Running on port 6379)
 * OpenAI API Key
 
-Clone the repo:
+**Clone the repo**:
 ```bash
-git clone 
+git clone https://github.com/ryder-4/NoteGenius.git
+cd NoteGenius
 ```
+
+**Backend Setup**
+
+```bash
+cd backend
+# Install dependancies
+pip install -r requirements.txt
+python config.py
+python generate_env.py
+
+```
+
+* In generate_env.py, assign your mongodb connection string to the variable `MONGO_URI`
+* Make sure `redis-server.exe` is running
+
+**Frontend Setup**
+In a new terminal, enter the following commands:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+
+
+ 
+
 
 
 
