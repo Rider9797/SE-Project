@@ -2,7 +2,7 @@
 
 NoteGenius is a full-stack web application that elevates note-taking with AI. Whether you want to generate study quizzes, beautify your notes, or listen to them while you drive to your exam, NoteGenius uses cutting-edge AI to make your notes work harder for you.
 
-This project was made for our Software Engineering course. Here are developers who worked on this:
+This project was made for our Software Engineering course. Here are the developers who worked on this:
 * **Muhammad Rayed** - [Rider9797](https://github.com/Rider9797)
 * **Aleena Abbas** - [aleenaabbas2003](https://github.com/aleenaabbas2003)
 * **Tayyab Haider** - [tayyabhaider](https://github.com/tayyabhaider)
