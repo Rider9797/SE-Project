@@ -32,7 +32,19 @@ This project was made for our Software Engineering course. Here are developers w
 
 **Database**
 * MongoDB Atlas
-* 
+
+## How to Run the App
+**Prerequisties**:
+* Node.js & npm
+* MongoDB Atlas Account
+* Redis Server (Running on port 6379)
+* OpenAI API Key
+
+Clone the repo:
+```bash
+git clone 
+```
+
 
 
 
