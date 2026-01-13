@@ -4,8 +4,8 @@ NoteGenius is a full-stack web application that elevates note-taking with AI. Wh
 
 This project was made for our Software Engineering course. Here are developers who worked on this:
 * **Muhammad Rayed** - [Rider9797](https://github.com/Rider9797)
-* **Aleena Abbas** - 
-* **Tayyab Haider** - 
+* **Aleena Abbas** - [aleenaabbas2003](https://github.com/aleenaabbas2003)
+* **Tayyab Haider** - [tayyabhaider](https://github.com/tayyabhaider)
 * **Abubakar Minhas** - [AbubakarMin1](https://github.com/AbubakarMin1)
 * **Hammad Yousaf** - [HammadYousaf](https://github.com/HammadYousaf-26100387)
 
