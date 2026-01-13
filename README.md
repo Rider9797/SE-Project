@@ -10,8 +10,14 @@ This project was made for our Software Engineering course. Here are developers w
 * **Hammad Yousaf** - [HammadYousaf](https://github.com/HammadYousaf-26100387)
 
 ## Features
-* **Full CRUD Operations**: Seamlessly create, read, update, and delete your notes.
-* 
+* **Full CRUD Operations**: Create, read, update, and delete your notes.
+* **User Authentication**: User signup and login system.
+* **AI Powered Features**: 
+  * Enhance Text: Provide a prompt to rephrase, beautify, or organize your content automatically.
+  * Text-to-Speech: Generate an audio file that reads out your notes to you (uses an API call to OpenAI's whiper model).
+  * Summarize: Condense long notes into key points with one click.
+  * Quiz It: Automatically generate a quiz based on your note's content.
+    
 
 
 
